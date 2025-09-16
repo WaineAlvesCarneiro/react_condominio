@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './DatePicker.module.css';
+import styles from './Input.module.css';
 
 const DatePicker = ({ id, name, value, onChange, placeholder, required }) => {
     return (
@@ -14,7 +15,7 @@ const DatePicker = ({ id, name, value, onChange, placeholder, required }) => {
             onChange={onChange}
             dateFormat="dd/MM/yyyy"
             placeholderText={placeholder}
-            className="react-datepicker__input"
+            className={styles.input}
             required={required}
         />
     );

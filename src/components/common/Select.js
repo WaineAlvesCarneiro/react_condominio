@@ -10,9 +10,10 @@ const Select = forwardRef(({ options, value, onChange, ...props }, ref) => {
       className={styles.select}
       value={value}
       onChange={onChange}
+      required
       {...props}
     >
-      <option value="0">Selecione uma opção</option>
+      <option value="">Selecione uma opção</option>
       {options.map((option, index) => (
         <option key={index} value={option.value}>
           {option.label}

@@ -17,8 +17,10 @@
   background-size: 12px;
 }
 
-.select:focus {
-  border-color: #80bdff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  outline: none;
+.select:invalid {
+  border-color: #dc3545;
+}
+
+.select:valid {
+  border-color: #28a745;
 }

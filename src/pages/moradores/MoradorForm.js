@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Input from '../../components/common/Input';
+import stylesInput from '../../components/common/Input.module.css';
 import Select from '../../components/common/Select';
 // import BooleanInput from '../../components/common/BooleanInput';
 import SwitchInput from '../../components/common/SwitchInput';
@@ -129,6 +130,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         required
                         unmask={true}
                         placeholder="(99) 99999-9999"
+                        className={stylesInput.input}
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
