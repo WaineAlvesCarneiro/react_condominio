@@ -30,12 +30,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
             dataSaida: null,
             imovelId: 0
         };
-        if (initialData.dataEntrada) {
-            initialData.dataEntrada = new Date(initialData.dataEntrada);
-        }
-        if (initialData.dataSaida) {
-            initialData.dataSaida = new Date(initialData.dataSaida);
-        }
+        if (initialData.dataEntrada) initialData.dataEntrada = new Date(initialData.dataEntrada);
+        if (initialData.dataSaida) initialData.dataSaida = new Date(initialData.dataSaida);
         return initialData;
     });
     const [imoveis, setImoveis] = useState([]);
@@ -43,7 +39,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
 
     useEffect(() => {
         const fetchImoveis = async () => {
-            if (user && user.token) {
+            if (user?.token) {
                 try {
                     const data = await imovelService.getAll(user.token);
                     const options = data.map(imovel => ({
@@ -60,9 +56,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
     }, [user]);
 
     useEffect(() => {
-        if (nomeRef.current) {
-            nomeRef.current.focus();
-        }
+        if (nomeRef.current) nomeRef.current.focus();
     }, [moradorData]);
 
     const handleChange = (e) => {
@@ -74,10 +68,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
     };
 
     const handleDateChange = (date, name) => {
-        setMorador(prev => ({
-            ...prev,
-            [name]: date
-        }));
+        setMorador(prev => ({ ...prev, [name]: date }));
     };
 
     const handleSubmit = async (e) => {
@@ -137,7 +128,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         autoComplete="off"
                         required
                         unmask={true}
-                        render={(ref, props) => <Input {...props} ref={ref} />}
+                        placeholder="(99) 99999-9999"
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
@@ -159,6 +150,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         value={morador.dataEntrada}
                         onChange={(date) => handleDateChange(date, 'dataEntrada')}
                         required
+                        placeholder="dd/mm/aaaa"
                     />
                 </div>
                 {morador.id > 0 && (
@@ -169,6 +161,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                             name="dataSaida"
                             value={morador.dataSaida}
                             onChange={(date) => handleDateChange(date, 'dataSaida')}
+                            placeholder="dd/mm/aaaa"
                         />
                     </div>
                 )}

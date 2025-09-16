@@ -16,6 +16,10 @@ const imovelService = {
       }
     });
 
+    if (response.status === 401) {
+      throw new Error("Token de autenticação expirado.");
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ erro: 'Falha ao buscar imóveis.' }));
       throw new Error(errorData.erro);
@@ -44,6 +48,10 @@ const imovelService = {
       body: JSON.stringify(imovelData)
     });
 
+    if (response.status === 401) {
+      throw new Error("Token de autenticação expirado.");
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ erro: 'Falha ao criar o imóvel.' }));
       throw new Error(errorData.erro || 'Falha ao criar o imóvel.');
@@ -67,6 +75,10 @@ const imovelService = {
       body: JSON.stringify(imovelData)
     });
 
+    if (response.status === 401) {
+      throw new Error("Token de autenticação expirado.");
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ erro: 'Falha ao atualizar o imóvel.' }));
       throw new Error(errorData.erro || 'Falha ao atualizar o imóvel.');
@@ -84,6 +96,10 @@ const imovelService = {
         'Authorization': `Bearer ${token}`
       }
     });
+
+    if (response.status === 401) {
+      throw new Error("Token de autenticação expirado.");
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ erro: 'Falha ao deletar o imóvel.' }));

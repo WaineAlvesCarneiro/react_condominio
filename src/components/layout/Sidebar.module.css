@@ -6,7 +6,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color:lightgray;
+  background-color: #282c34;
   padding-top: 60px;
   color: white;
 }
@@ -24,19 +24,17 @@
 .navLink {
   width: 210px;
   height: 40px;
-
   display: flex;
   align-items: center;
   padding-left: 10px;
-
-  color: black;
+  color: #ffffff;
   text-decoration: none;
   font-size: 1.1em;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s, transform 0.2s;
   border-radius: 5px;
 }
 
 .navLink:hover {
-  background-color: rgb(182, 180, 180);
-  border-radius: 5px;
+  background-color: #40464d;
+  transform: translateX(5px);
 }

@@ -1,9 +1,9 @@
 /* src\pages\dashboard\Dashboard.module.css */
 
 .dashboardContainer {
-  padding: 80px 20px 20px 270px;
+  padding: 80px 20px 60px 270px;
   background-color: #f8f9fa;
-  min-height: calc(100vh - 160px);
+  min-height: 100vh;
 }
 
 .dashboardContainer h1 {

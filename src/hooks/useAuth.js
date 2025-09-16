@@ -10,14 +10,12 @@ export const AuthProvider = ({ children }) => {
       const storedToken = sessionStorage.getItem('token');
       if (storedToken) {
         const decodedToken = jwtDecode(storedToken);
-        // Verifica se o token ainda é válido antes de carregar o usuário
         if (decodedToken.exp * 1000 > Date.now()) {
-          return { ...decodedToken, token: storedToken };
+          return { ...decodedToken, token: storedToken, username: decodedToken.unique_name };
         }
       }
       return null;
     } catch (error) {
-      //console.error("Failed to parse token from sessionStorage:", error);
       return null;
     }
   });
@@ -37,11 +35,9 @@ export const AuthProvider = ({ children }) => {
       const token = userData.token;
       const decodedToken = jwtDecode(token);
 
-      setUser({ ...decodedToken, token, username });
+      setUser({ ...decodedToken, token, username: decodedToken.unique_name });
 
     } catch (error) {
-      // O throw error; é fundamental para que o componente de login possa capturar a mensagem e exibir na tela
-      //console.error("Login failed:", error);
       throw error;
     }
   };
