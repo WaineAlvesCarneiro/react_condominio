@@ -5,8 +5,8 @@ import { useAuth } from '../../hooks/useAuth';
 import Input from '../../components/common/Input';
 import stylesInput from '../../components/common/Input.module.css';
 import Select from '../../components/common/Select';
-// import BooleanInput from '../../components/common/BooleanInput';
-import SwitchInput from '../../components/common/SwitchInput';
+// import Boolean from '../../components/common/Boolean';
+import Switch from '../../components/common/Switch';
 import Button from '../../components/common/Button';
 import { notificationService } from '../../services/notificationService';
 import stylesForm from '../../components/common/Form.module.css';
@@ -178,13 +178,13 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         required
                     />
                 </div>
-                {/* <BooleanInput
+                {/* <Boolean
                     label="É proprietário?"
                     name="isProprietario"
                     checked={morador.isProprietario}
                     onChange={handleChange}
                 /> */}
-                <SwitchInput
+                <Switch
                     label="É proprietário?"
                     name="isProprietario"
                     checked={morador.isProprietario}

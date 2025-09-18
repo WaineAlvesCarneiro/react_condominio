@@ -1,9 +1,9 @@
-// src/components/common/SwitchInput.js
+// src/components/common/Switch.js
 
 import React from 'react';
-import styles from './SwitchInput.module.css';
+import styles from './Switch.module.css';
 
-function SwitchInput({ label, checked, onChange, name, ...props }) {
+function Switch({ label, checked, onChange, name, ...props }) {
   return (
     <div className={styles.container}>
       <span className={styles.label}>{label}</span>
@@ -22,4 +22,4 @@ function SwitchInput({ label, checked, onChange, name, ...props }) {
   );
 }
 
-export default SwitchInput;
+export default Switch;

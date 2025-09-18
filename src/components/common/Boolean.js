@@ -1,9 +1,9 @@
-// src\components\common\BooleanInput.js
+// src\components\common\Boolean.js
 
 import React from 'react';
-import styles from './BooleanInput.module.css';
+import styles from './Boolean.module.css';
 
-function BooleanInput({ label, checked, onChange, name, ...props }) {
+function Boolean({ label, checked, onChange, name, ...props }) {
   return (
     <div className={styles.checkboxContainer}>
       <input
@@ -22,4 +22,4 @@ function BooleanInput({ label, checked, onChange, name, ...props }) {
   );
 }
 
-export default BooleanInput;
+export default Boolean;
