@@ -62,7 +62,7 @@ function Imoveis() {
         await imovelService.update({ ...imovelData, id: editingImovel.id }, user.token);
         notificationService.success('Imóvel atualizado com sucesso!');
         setEditingImovel(null);
-      } else {console.log(imovelData);
+      } else {
         await imovelService.create(imovelData, user.token);
         notificationService.success('Imóvel adicionado com sucesso!');
       }

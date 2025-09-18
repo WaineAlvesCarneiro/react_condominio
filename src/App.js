@@ -1,7 +1,5 @@
 // src/App.js
 
-import './App.css';
-
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
