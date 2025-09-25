@@ -12,6 +12,7 @@ import { notificationService } from '../../services/notificationService';
 import stylesForm from '../../components/common/Form.module.css';
 import DatePicker from '../../components/common/DatePicker';
 import { IMaskInput } from 'react-imask';
+import { parseIsoDateLocal, formatDateToIso } from '../../utils/formatters';
 
 import imovelService from '../../services/imovelService';
 // import styles from './MoradorForm.module.css';
@@ -31,8 +32,13 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
             dataSaida: null,
             imovelId: 0
         };
-        if (initialData.dataEntrada) initialData.dataEntrada = new Date(initialData.dataEntrada);
-        if (initialData.dataSaida) initialData.dataSaida = new Date(initialData.dataSaida);
+        if (initialData.dataEntrada) {
+            initialData.dataEntrada = parseIsoDateLocal(initialData.dataEntrada);
+        }
+        if (initialData.dataSaida) {
+            initialData.dataSaida = parseIsoDateLocal(initialData.dataSaida);
+        }
+
         return initialData;
     });
     const [imoveis, setImoveis] = useState([]);
@@ -78,8 +84,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
 
         const moradorToSend = {
             ...morador,
-            dataEntrada: morador.dataEntrada ? morador.dataEntrada.toISOString().split('T')[0] : null,
-            dataSaida: morador.dataSaida ? morador.dataSaida.toISOString().split('T')[0] : null,
+            dataEntrada: morador.dataEntrada ? formatDateToIso(morador.dataEntrada) : null,
+            dataSaida: morador.dataSaida ? formatDateToIso(morador.dataSaida) : null,
             imovelId: parseInt(morador.imovelId)
         };
 

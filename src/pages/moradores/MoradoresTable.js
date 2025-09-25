@@ -4,7 +4,7 @@ import React from 'react';
 import Button from '../../components/common/Button';
 import stylesDataTable from '../../components/common/DataTable.module.css';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
-import { formatarCelular } from '../../utils/formatters';
+import { formatarCelular, formatarData } from '../../utils/formatters';
 
 import styles from './MoradoresTable.module.css';
 
@@ -36,10 +36,10 @@ function MoradoresTable({ moradores, onEdit, onDelete }) {
               <td>{morador.nome}</td>
               <td>{formatarCelular(morador.celular)}</td>
               <td>
-                {morador.dataEntrada && new Date(morador.dataEntrada).toLocaleDateString()}
+                {morador.dataEntrada && formatarData(morador.dataEntrada)}
               </td>
               <td>
-                {morador.dataSaida && new Date(morador.dataSaida).toLocaleDateString()}
+                {morador.dataSaida && formatarData(morador.dataSaida)}
               </td>
               <td>{morador.imovelDto?.bloco} - {morador.imovelDto?.apartamento}</td>
               <td className={`${styles.status} ${morador.isProprietario ? styles.sim : styles.nao}`}>
