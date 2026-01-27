@@ -3,8 +3,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Sidebar.module.css';
+import { useAuth } from '../../hooks/useAuth';
 
 function Sidebar() {
+  const { user } = useAuth();
   return (
     <nav className={styles.sidebar}>
       <ul>
@@ -12,11 +14,25 @@ function Sidebar() {
           <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
         </li>
         <li>
-          <Link to="/imoveis" className={styles.navLink}>Imóveis</Link>
+          {['Sindico', 'Porteiro'].includes(user?.role) && (
+            <Link to="/imoveis" className={styles.navLink}>Imóveis</Link>
+          )}
         </li>
         <li>
-          <Link to="/moradores" className={styles.navLink}>Moradores</Link>
+          {['Sindico', 'Porteiro'].includes(user?.role) && (
+            <Link to="/moradores" className={styles.navLink}>Moradores</Link>
+          )}
         </li>
+        <li>
+          {['Suporte'].includes(user?.role) && (
+            <Link to="/empresas" className={styles.navLink}>Empresas</Link>
+          )}
+        </li>
+        {/* <li>
+          {['Suporte'].includes(user?.role) && (
+            <Link to="/usuarios" className={styles.navLink}>Usuários</Link>
+          )}
+        </li> */}
       </ul>
     </nav>
   );

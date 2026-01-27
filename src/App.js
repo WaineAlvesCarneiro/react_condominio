@@ -12,6 +12,8 @@ import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import Imoveis from './pages/imoveis/Imoveis';
 import Moradores from './pages/moradores/Moradores';
+import Empresas from './pages/empresas/Empresas';
+// import Usuarios from './pages/usuarios/Usuarios';
 
 function App() {
   return (
@@ -20,14 +22,25 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
 
-          <Route path="/" element={<PrivateRoute />}>
+          <Route element={<PrivateRoute allowedRoles={['Suporte', 'Sindico', 'Porteiro']} />}>
             <Route path="/" element={<MainLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="imoveis" element={<Imoveis />} />
-              <Route path="moradores" element={<Moradores />} />
+              
+              <Route element={<PrivateRoute allowedRoles={['Sindico', 'Porteiro']} />}>
+                <Route index element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="imoveis" element={<Imoveis />} />
+                <Route path="moradores" element={<Moradores />} />
+              </Route>
+
+              <Route element={<PrivateRoute allowedRoles={['Suporte']} />}>
+                <Route path="empresas" element={<Empresas />} />
+                {/* { <Route path="usuarios" element={<Usuarios />} /> } */}
+              </Route>
+
             </Route>
           </Route>
+          
+          <Route path="/unauthorized" element={<h1>Acesso Negado</h1>} />
         </Routes>
       </AuthProvider>
       <ToastContainer position="top-right" autoClose={3000} />
