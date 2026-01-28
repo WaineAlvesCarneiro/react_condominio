@@ -1,17 +1,22 @@
 // src\pages\moradores\MoradorForm.js
 
 import React, { useState, useEffect, useRef } from 'react';
+import { IMaskInput } from 'react-imask';
+
 import { useAuth } from '../../hooks/useAuth';
-import Input from '../../components/common/Input';
-import stylesInput from '../../components/common/Input.module.css';
-import Select from '../../components/common/Select';
+
 // import Boolean from '../../components/common/Boolean';
+import Input from '../../components/common/Input';
+import Select from '../../components/common/Select';
 import Switch from '../../components/common/Switch';
 import Button from '../../components/common/Button';
-import { notificationService } from '../../services/notificationService';
-import stylesForm from '../../components/common/Form.module.css';
 import DatePicker from '../../components/common/DatePicker';
-import { IMaskInput } from 'react-imask';
+
+import { notificationService } from '../../services/notificationService';
+
+import stylesInput from '../../components/common/Input.module.css';
+import stylesForm from '../../components/common/Form.module.css';
+
 import { parseIsoDateLocal, formatarData } from '../../utils/formatters';
 
 import imovelService from '../../services/imovelService';
@@ -111,14 +116,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                 {morador.id > 0 && (
                     <div className={stylesForm.formGroup}>
                         <label htmlFor="id">Código:</label>
-                        <Input
-                            id="id"
-                            name="id"
-                            value={morador.id}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            disabled
-                        />
+                        <Input id="id" name="id" value={morador.id} disabled />
                     </div>
                 )}
                 <div className={stylesForm.formGroup}>
@@ -144,7 +142,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         autoComplete="off"
                         required
                         unmask={true}
-                        placeholder="(99) 99999-9999"
+                        placeholder="(00) 00000-0000"
                         className={stylesInput.input}
                     />
                 </div>

@@ -1,25 +1,39 @@
-// src\components\common\Select.jssim
-
+// src\components\common\Select.js
 import React, { forwardRef } from 'react';
 import styles from './Select.module.css';
 
-const Select = forwardRef(({ options, value, onChange, ...props }, ref) => {
+const Select = forwardRef(({ options = [], value, onChange, label, firstOptionLabel = "Selecione...", ...props }, ref) => {
+  
+  const handleInternalChange = (e) => {
+    const { value: selectedValue } = e.target;
+    const processedValue = selectedValue === "" ? "" : !isNaN(selectedValue) ? Number(selectedValue) : selectedValue;
+
+    onChange({
+      target: {
+        name: props.name,
+        value: processedValue
+      }
+    });
+  };
+
   return (
-    <select
-      ref={ref}
-      className={styles.select}
-      value={value}
-      onChange={onChange}
-      required
-      {...props}
-    >
-      <option value="">Selecione uma opção</option>
-      {options.map((option, index) => (
-        <option key={index} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <div className={styles.container}>
+      {label && <label className={styles.label}>{label}</label>}
+      <select
+        ref={ref}
+        className={styles.select}
+        value={value}
+        onChange={handleInternalChange}
+        {...props}
+      >
+        <option value="">{firstOptionLabel}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 });
 

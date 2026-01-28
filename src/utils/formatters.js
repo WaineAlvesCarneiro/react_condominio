@@ -1,5 +1,5 @@
 // src\utils\formatters.js
-import { parse, format, isValid } from 'date-fns';
+import { format, isValid } from 'date-fns';
 
 export const parseIsoDateLocal = (dateString) => {
     if (!dateString) return null;
@@ -63,4 +63,26 @@ export const formatarCelular = (celular) => {
         return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 7)}-${apenasDigitos.substring(7, 11)}`;
     }
     return celular;
+};
+
+export const formatarTelefone = (telefone) => {
+    if (!telefone) return '';
+    const apenasDigitos = telefone.replace(/\D/g, '');
+    if (apenasDigitos.length === 10) {
+        return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 6)}-${apenasDigitos.substring(6, 10)}`;
+    }
+    return telefone;
+};
+
+export const formatarCnpj = (cnpj) => {
+    if (!cnpj) return '';
+    const apenasDigitos = cnpj.replace(/\D/g, '');
+    if (apenasDigitos.length === 14) {
+        return `${apenasDigitos.substring(0, 2)}` +
+            `.${apenasDigitos.substring(2, 5)}` +
+            `.${apenasDigitos.substring(5, 8)}/` +
+            `${apenasDigitos.substring(8, 12)}-` +
+            `${apenasDigitos.substring(12, 14)}`;
+        }
+    return cnpj;
 };

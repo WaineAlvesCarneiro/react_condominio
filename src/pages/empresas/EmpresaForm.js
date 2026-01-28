@@ -1,36 +1,62 @@
 // src\pages\empresas\EmpresaForm.js
 
 import React, { useState, useEffect, useRef } from 'react';
-import Button from '../../components/common/Button';
-import Input from '../../components/common/Input';
-import stylesForm from '../../components/common/Form.module.css';
 import { IMaskInput } from 'react-imask';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
+import Select from '../../components/common/Select';
+import stylesForm from '../../components/common/Form.module.css';
+import stylesInput from '../../components/common/Input.module.css';
+import { buscarCep } from '../../services/cepService';
+import { useEnum } from '../../hooks/useEnum'
 
 // import styles from './EmpresaForm.module.css';
 
 function EmpresaForm({ onSave, onCancel, empresaData }) {
     const [loading, setLoading] = useState(false);
+    const { options: tipoCondominioOptions, loading: loadingEnums } = useEnum('tipo-condominio');
+
     const [empresa, setEmpresa] = useState(empresaData || {
         id: 0,
         razaoSocial: '',
         fantasia: '',
         cnpj: '',
-        tipoDeCondominio: 0,
+        tipoDeCondominio: '',
         nome: '',
         celular: '',
-        telefone: null,
+        telefone: '',
         email: '',
-        senha: null,
+        senha: '',
         host: '',
-        porta: 0,
+        porta: '',
         cep: '',
         uf: '',
         cidade: '',
         endereco: '',
-        complemento: null,
+        bairro: '',
+        complemento: '',
         dataInclusao: null,
         dataAlteracao: null,
     });
+
+    const handleCepAccept = async (value) => {
+        setEmpresa(prev => ({ ...prev, cep: value }));
+
+        if (value.length === 8) {
+            const resultado = await buscarCep(value);
+            
+            if (resultado && !resultado.error) {
+                setEmpresa(prev => ({
+                    ...prev,
+                    uf: resultado.uf,
+                    cidade: resultado.cidade,
+                    endereco: resultado.endereco,
+                    bairro: resultado.bairro
+                }));
+            }
+        }
+    };
+    
     const razaoSocialRef = useRef(null);
 
     useEffect(() => {
@@ -58,16 +84,10 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                 {empresa.id > 0 && (
                     <div className={stylesForm.formGroup}>
                         <label htmlFor="id">Código:</label>
-                        <Input
-                            id="id"
-                            name="id"
-                            value={empresa.id}
-                            onChange={handleChange}
-                            autoComplete="off"
-                            disabled
-                        />
+                        <Input id="id" name="id" value={empresa.id} disabled />
                     </div>
                 )}
+
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="razaoSocial">Razão Social:</label>
                     <Input
@@ -80,6 +100,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         required
                     />
                 </div>
+
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="fantasia">Fantasia:</label>
                     <Input
@@ -91,26 +112,31 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         required
                     />
                 </div>
+
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="cnpj">Cnpj:</label>
-                    <Input
-                        id="cnpj"
-                        name="cnpj"
+                    <IMaskInput
+                        mask="00.000.000/0000-00"
                         value={empresa.cnpj}
-                        onChange={handleChange}
+                        unmask={true}
+                        onAccept={(value) => setEmpresa(prev => ({ ...prev, cnpj: value }))}
                         autoComplete="off"
+                        placeholder="00.000.000/0000-00"
+                        className={stylesInput.input}
                         required
                     />
                 </div>
 
                 <div className={stylesForm.formGroup}>
-                    <label htmlFor="tipoDeCondominio">Tipo De Condóminio:</label>
-                    <Input
+                    <label htmlFor="tipoDeCondominio">Tipo De Condomínio:</label>
+                    <Select
                         id="tipoDeCondominio"
                         name="tipoDeCondominio"
                         value={empresa.tipoDeCondominio}
                         onChange={handleChange}
-                        autoComplete="off"
+                        options={tipoCondominioOptions}
+                        disabled={loadingEnums}
+                        firstOptionLabel={loadingEnums ? "Carregando..." : "Selecione uma opção"}
                         required
                     />
                 </div>
@@ -131,27 +157,26 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                     <label htmlFor="celular">Celular:</label>
                     <IMaskInput
                         mask="(00) 00000-0000"
-                        id="celular"
-                        name="celular"
                         value={empresa.celular}
+                        unmask={true}
                         onAccept={(value) => setEmpresa(prev => ({ ...prev, celular: value }))}
                         autoComplete="off"
-                        required
-                        unmask={true}
                         placeholder="(99) 99999-9999"
                         className={stylesInput.input}
+                        required
                     />
                 </div>
 
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="telefone">Telefone:</label>
-                    <Input
-                        id="telefone"
-                        name="telefone"
+                    <IMaskInput
+                        mask="(00) 0000-0000"
                         value={empresa.telefone}
-                        onChange={handleChange}
+                        unmask={true}
+                        onAccept={(value) => setEmpresa(prev => ({ ...prev, telefone: value }))}
                         autoComplete="off"
-                        required
+                        placeholder="(00) 0000-0000"
+                        className={stylesInput.input}
                     />
                 </div>
 
@@ -199,18 +224,21 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         value={empresa.porta}
                         onChange={handleChange}
                         autoComplete="off"
+                        className={stylesInput.input}
                         required
                     />
                 </div>
 
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="cep">Cep:</label>
-                    <Input
-                        id="cep"
-                        name="cep"
+                    <IMaskInput
+                        mask="00000-000"
                         value={empresa.cep}
-                        onChange={handleChange}
+                        unmask={true}
+                        onAccept={handleCepAccept}
                         autoComplete="off"
+                        placeholder="00000-000"
+                        className={stylesInput.input}
                         required
                     />
                 </div>
@@ -252,6 +280,18 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                 </div>
 
                 <div className={stylesForm.formGroup}>
+                    <label htmlFor="bairro">Bairro:</label>
+                    <Input
+                        id="bairro"
+                        name="bairro"
+                        value={empresa.bairro}
+                        onChange={handleChange}
+                        autoComplete="off"
+                        required
+                    />
+                </div>
+
+                <div className={stylesForm.formGroup}>
                     <label htmlFor="complemento">Complemento:</label>
                     <Input
                         id="complemento"
@@ -259,7 +299,6 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         value={empresa.complemento}
                         onChange={handleChange}
                         autoComplete="off"
-                        required
                     />
                 </div>
 

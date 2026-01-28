@@ -10,6 +10,7 @@ import stylesPageLayout from '../../components/layout/PageLayout.module.css';
 import empresaService from '../../services/empresaService';
 import EmpresasTable from './EmpresasTable';
 import EmpresaForm from './EmpresaForm';
+import { parseIsoDateLocal } from '../../utils/formatters';
 // import styles from './Empresa.module.css';
 
 function Empresas() {
@@ -59,11 +60,19 @@ function Empresas() {
   const handleSave = async (empresaData) => {
     try {
       if (editingEmpresa) {
-        await empresaService.update({ ...empresaData, id: editingEmpresa.id }, user.token);
+        const dadosFormatados = {
+          ...empresaData,
+          dataAlteracao: parseIsoDateLocal(new Date()),
+        };
+        await empresaService.update({ ...dadosFormatados, id: editingEmpresa.id }, user.token);
         notificationService.success('Empresa atualizado com sucesso!');
         setEditingEmpresa(null);
       } else {
-        await empresaService.create(empresaData, user.token);
+        const dadosFormatados = {
+          ...empresaData,
+          dataInclusao: parseIsoDateLocal(new Date()),
+        };
+        await empresaService.create(dadosFormatados, user.token);
         notificationService.success('Empresa adicionado com sucesso!');
       }
       setShowForm(false);

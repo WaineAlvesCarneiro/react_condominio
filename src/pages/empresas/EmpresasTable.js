@@ -4,14 +4,22 @@ import React from 'react';
 import Button from '../../components/common/Button';
 import stylesDataTable from '../../components/common/DataTable.module.css';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
-import { formatarCelular } from '../../utils/formatters';
+import { formatarCnpj, formatarCelular } from '../../utils/formatters';
+import { useEnum } from '../../hooks/useEnum';
 
 // import styles from './EmpresasTable.module.css';
 
 function EmpresasTable({ empresas, onEdit, onDelete }) {
+  const { options: tipoCondominioOptions } = useEnum('tipo-condominio');
+
   const data = Array.isArray(empresas) 
     ? empresas 
     : (empresas && empresas.items ? empresas.items : []);
+
+  const getTipoCondominioLabel = (id) => {
+    const option = tipoCondominioOptions.find(opt => opt.value === id);
+    return option ? option.label : 'Não definido';
+  };
 
   return (
     <div className={stylesPageLayout.tableContainer}>
@@ -22,7 +30,7 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
             <th>Razão Social</th>
             <th>Fantasia</th>
             <th>Cnpj</th>
-            <th>Tipo De Condóminio</th>
+            <th>Tipo De Condomínio</th>
             <th>Nome</th>
             <th>Celular</th>
             <th className={stylesDataTable.action}>Ações</th>
@@ -39,10 +47,10 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
               <td>{empresa.id}</td>
               <td>{empresa.razaoSocial}</td>
               <td>{empresa.fantasia}</td>
-              <td>{empresa.cnpj}</td>
-              <td>{empresa.TipoDeCondominio === 1 ? "Casas" : "Apartamentos"}</td>
-              <th>{empresa.Nome}</th>
-              <th>{formatarCelular(empresa.Celular)}</th>
+              <td>{formatarCnpj(empresa.cnpj)}</td>
+              <td>{getTipoCondominioLabel(empresa.tipoDeCondominio)}</td>
+              <th>{empresa.nome}</th>
+              <th>{formatarCelular(empresa.celular)}</th>
               <td className={stylesDataTable.action}>
                 <Button
                   variant="primary"
