@@ -26,6 +26,11 @@ function Dashboard() {
 
     try {
       setLoading(true);
+      if (user.role !== 'Sindico' || user.role !== 'Porteiro') {
+        setLoading(false);
+        setError("Acesso não autorizado. Usuário com Role incorreta ou inválida.");
+        return;
+      }
       const dataImoveis = await imovelService.getAll(user.token);
       setImoveis(dataImoveis);
       const dataMoradores = await moradorService.getAll(user.token);
@@ -45,17 +50,15 @@ function Dashboard() {
   if (loading) {
     return (
       <div className={styles.dashboardContainer}>
-        <h1>Bem-vindo ao Painel de Controle!</h1>
         <p>Carregando dados...</p>
       </div>
     );
   }
 
-  if (error && user.role !== 'Suporte') {
+  if (error && user.role !== 'Suporte' && user.role !== 'Sindico' && user.role !== 'Porteiro') {
     return (
       <div className={styles.dashboardContainer}>
-        <h1>Bem-vindo ao Painel de Controle!</h1>
-        <p>Visão geral rápida do seu condomínio.</p>
+        <p>Erro ao acessar a pagina favor entrar em contato com suporte.</p>
         <p style={{ color: 'red' }}>Erro: {error}</p>
       </div>
     );
@@ -68,51 +71,51 @@ function Dashboard() {
       </div>
     );
   }
-  else{
-  return (
-    <div className={styles.dashboardContainer}>
-      <h1>Bem-vindo ao Painel de Controle!</h1>
-      <p>Visão geral rápida do seu condomínio.</p>
+  if (user.role === 'Sindico' || user.role === 'Porteiro') {
+    return (
+      <div className={styles.dashboardContainer}>
+        <h1>Bem-vindo ao Painel de Controle!</h1>
+        <p>Visão geral rápida do seu condomínio.</p>
 
-      <div className={styles.dashboardGrid}>
-        <div className={styles.dashboardCard}>
-          <h2>Imóveis Cadastrados</h2>
-          <p>Total: {imoveis.length}</p>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() => navigate('/imoveis')}
-          >
-            Ver Detalhes
-          </Button>
-        </div>
+        <div className={styles.dashboardGrid}>
+          <div className={styles.dashboardCard}>
+            <h2>Imóveis Cadastrados</h2>
+            <p>Total: {imoveis.length}</p>
+            <Button
+              variant="secondary"
+              size="medium"
+              onClick={() => navigate('/imoveis')}
+            >
+              Ver Detalhes
+            </Button>
+          </div>
 
-        <div className={styles.dashboardCard}>
-          <h2>Moradores Ativos</h2>
-          <p>Total: {moradores.length}</p>
-          <Button
-            variant="secondary"
-            size="medium"
-            onClick={() => navigate('/moradores')}
-          >
-            Ver Detalhes
-          </Button>
-        </div>
+          <div className={styles.dashboardCard}>
+            <h2>Moradores Ativos</h2>
+            <p>Total: {moradores.length}</p>
+            <Button
+              variant="secondary"
+              size="medium"
+              onClick={() => navigate('/moradores')}
+            >
+              Ver Detalhes
+            </Button>
+          </div>
 
-        <div className={styles.dashboardCard}>
-          <h2>Alertas Recentes</h2>
-          <p>'falta implementar'</p>
-          <Button
-            variant="warning"
-            size="medium"
-            onClick={() => navigate('/dashboard')}
-          >
-            Ver Alertas
-          </Button>
+          <div className={styles.dashboardCard}>
+            <h2>Alertas Recentes</h2>
+            <p>'falta implementar'</p>
+            <Button
+              variant="warning"
+              size="medium"
+              onClick={() => navigate('/dashboard')}
+            >
+              Ver Alertas
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
   }
 }
 

@@ -4,6 +4,7 @@ import React from 'react';
 import Button from '../../components/common/Button';
 import stylesDataTable from '../../components/common/DataTable.module.css';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
+import { formatarCelular } from '../../utils/formatters';
 
 // import styles from './EmpresasTable.module.css';
 
@@ -39,7 +40,7 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
               <td>{empresa.razaoSocial}</td>
               <td>{empresa.fantasia}</td>
               <td>{empresa.cnpj}</td>
-              <td>{empresa.TipoDeCondominio == 1 ? "Casas" : "Apartamentos"}</td>
+              <td>{empresa.TipoDeCondominio === 1 ? "Casas" : "Apartamentos"}</td>
               <th>{empresa.Nome}</th>
               <th>{formatarCelular(empresa.Celular)}</th>
               <td className={stylesDataTable.action}>
