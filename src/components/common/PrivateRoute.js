@@ -9,18 +9,16 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (loading) return <div>Carregando...</div>;
 
-  // Se não estiver logado, manda para o login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Se a rota exige roles específicos e o usuário não tem o role necessário
+  allowedRoles.includes(user.role);
+  if (allowedRoles) return <Outlet />;
+  
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />; 
-    // Ou redirecione para o dashboard com um alerta
   }
-
-  return <Outlet />;
 };
 
 export default PrivateRoute;

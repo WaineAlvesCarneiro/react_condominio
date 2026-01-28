@@ -10,29 +10,29 @@ function Sidebar() {
   return (
     <nav className={styles.sidebar}>
       <ul>
-        <li>
-          <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
-        </li>
-        <li>
-          {['Sindico', 'Porteiro'].includes(user?.role) && (
+        {['Suporte', 'Sindico', 'Porteiro'].includes(user?.role) && (
+          <li>
+            <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
+          </li>
+        )}
+
+        {['Sindico', 'Porteiro'].includes(user?.role) && (
+          <li>
             <Link to="/imoveis" className={styles.navLink}>Imóveis</Link>
-          )}
-        </li>
-        <li>
-          {['Sindico', 'Porteiro'].includes(user?.role) && (
+          </li>
+        )}
+      
+        {['Sindico', 'Porteiro'].includes(user?.role) && (
+          <li>
             <Link to="/moradores" className={styles.navLink}>Moradores</Link>
-          )}
-        </li>
-        <li>
-          {['Suporte'].includes(user?.role) && (
+          </li>
+        )}
+
+        {['Suporte'].includes(user?.role) && (
+          <li>
             <Link to="/empresas" className={styles.navLink}>Empresas</Link>
-          )}
-        </li>
-        {/* <li>
-          {['Suporte'].includes(user?.role) && (
-            <Link to="/usuarios" className={styles.navLink}>Usuários</Link>
-          )}
-        </li> */}
+          </li>
+        )}
       </ul>
     </nav>
   );

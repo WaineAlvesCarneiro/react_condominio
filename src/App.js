@@ -13,7 +13,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import Imoveis from './pages/imoveis/Imoveis';
 import Moradores from './pages/moradores/Moradores';
 import Empresas from './pages/empresas/Empresas';
-// import Usuarios from './pages/usuarios/Usuarios';
+import HomeRedirect from './components/layout/Home';
 
 function App() {
   return (
@@ -24,9 +24,9 @@ function App() {
 
           <Route element={<PrivateRoute allowedRoles={['Suporte', 'Sindico', 'Porteiro']} />}>
             <Route path="/" element={<MainLayout />}>
-              
+              <Route index element={<HomeRedirect />} />
+
               <Route element={<PrivateRoute allowedRoles={['Sindico', 'Porteiro']} />}>
-                <Route index element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="imoveis" element={<Imoveis />} />
                 <Route path="moradores" element={<Moradores />} />
@@ -34,7 +34,6 @@ function App() {
 
               <Route element={<PrivateRoute allowedRoles={['Suporte']} />}>
                 <Route path="empresas" element={<Empresas />} />
-                {/* { <Route path="usuarios" element={<Usuarios />} /> } */}
               </Route>
 
             </Route>

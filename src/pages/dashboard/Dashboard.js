@@ -51,7 +51,7 @@ function Dashboard() {
     );
   }
 
-  if (error) {
+  if (error && user.role !== 'Suporte') {
     return (
       <div className={styles.dashboardContainer}>
         <h1>Bem-vindo ao Painel de Controle!</h1>
@@ -61,6 +61,14 @@ function Dashboard() {
     );
   }
 
+  if (user.role === 'Suporte') {
+    return (
+      <div className={styles.dashboardContainer}>
+        <h1>Bem-vindo!</h1>
+      </div>
+    );
+  }
+  else{
   return (
     <div className={styles.dashboardContainer}>
       <h1>Bem-vindo ao Painel de Controle!</h1>
@@ -105,6 +113,7 @@ function Dashboard() {
       </div>
     </div>
   );
+  }
 }
 
 export default Dashboard;
