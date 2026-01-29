@@ -16,6 +16,7 @@ function Dashboard() {
 
   const [imoveis, setImoveis] = useState([]);
   const [moradores, setMoradores] = useState([]);
+  const titulo = 'Bem-vindo ao Painel de Controle do Condomínio!'
 
   const fetchDashboard = useCallback(async () => {
     if (!user || !user.token) {
@@ -50,6 +51,7 @@ function Dashboard() {
   if (loading) {
     return (
       <div className={styles.dashboardContainer}>
+        <h3>{titulo}</h3>
         <p>Carregando dados...</p>
       </div>
     );
@@ -67,15 +69,14 @@ function Dashboard() {
   if (user.role === 'Suporte') {
     return (
       <div className={styles.dashboardContainer}>
-        <h1>Bem-vindo!</h1>
+        <h3>Bem-vindo!</h3>
       </div>
     );
   }
   if (user.role === 'Sindico' || user.role === 'Porteiro') {
     return (
       <div className={styles.dashboardContainer}>
-        <h1>Bem-vindo ao Painel de Controle!</h1>
-        <p>Visão geral rápida do seu condomínio.</p>
+        <h3>{titulo}</h3>
 
         <div className={styles.dashboardGrid}>
           <div className={styles.dashboardCard}>

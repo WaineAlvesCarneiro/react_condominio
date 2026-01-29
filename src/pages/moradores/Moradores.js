@@ -22,7 +22,8 @@ function Moradores() {
   const [moradores, setMoradores] = useState([]);
   const [editingMorador, setEditingMorador] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
-
+  const titulo = 'Gerenciamento de Moradores';
+  
   const fetchMoradores = useCallback(async () => {
     if (!user || !user.token) {
       notificationService.error('Acesso não autorizado. Por favor, faça login.');
@@ -142,7 +143,7 @@ function Moradores() {
   if (loading) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Morador</h1>
+        <h3>{titulo}</h3>
         <p>Carregando moradores...</p>
       </div>
     );
@@ -151,7 +152,7 @@ function Moradores() {
   if (error) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Morador</h1>
+        <h3>{titulo}</h3>
         <p style={{ color: 'red' }}>Erro: {error}</p>
       </div>
     );
@@ -159,10 +160,7 @@ function Moradores() {
 
   return (
     <div className={stylesPageLayout.container}>
-      <h1>Gerenciamento de Moradores</h1>
-      {user.role === 'Sindico' && (
-        <p>Aqui você pode ver, adicionar, editar e remover moradores do condomínio.</p>
-      )}
+      <h3>{titulo}</h3>
 
       {!showForm && user.role === 'Sindico' && (
         <Button

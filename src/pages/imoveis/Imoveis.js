@@ -21,6 +21,7 @@ function Imoveis() {
   const [imoveis, setImoveis] = useState([]);
   const [editingImovel, setEditingImovel] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const titulo = 'Gerenciamento de Imóveis';
 
   const fetchImoveis = useCallback(async () => {
     if (!user || !user.token) {
@@ -93,7 +94,7 @@ function Imoveis() {
   if (loading) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Imóveis</h1>
+        <h3>{titulo}</h3>
         <p>Carregando imóveis...</p>
       </div>
     );
@@ -102,7 +103,7 @@ function Imoveis() {
   if (error) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Imóveis</h1>
+        <h3>{titulo}</h3>
         <p style={{ color: 'red' }}>Erro: {error}</p>
       </div>
     );
@@ -110,10 +111,7 @@ function Imoveis() {
 
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Imóveis</h1>
-        {user.role === 'Sindico' && (
-          <p>Aqui você pode ver, adicionar, editar e remover imóveis do condomínio.</p>
-        )}
+        <h3>{titulo}</h3>
 
         {!showForm && user.role === 'Sindico' && (
           <Button

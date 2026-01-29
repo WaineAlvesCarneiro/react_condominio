@@ -22,6 +22,7 @@ function Empresas() {
   const [empresas, setEmpresas] = useState([]);
   const [editingEmpresa, setEditingEmpresa] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const titulo = 'Gerenciamento de Empresas';
 
   const fetchEmpresas = useCallback(async () => {
     if (!user || !user.token) {
@@ -102,7 +103,7 @@ function Empresas() {
   if (loading) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Empresa</h1>
+        <h3>{titulo}</h3>
         <p>Carregando empresas...</p>
       </div>
     );
@@ -111,7 +112,7 @@ function Empresas() {
   if (error) {
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Empresas</h1>
+        <h3>{titulo}</h3>
         <p style={{ color: 'red' }}>Erro: {error}</p>
       </div>
     );
@@ -119,8 +120,7 @@ function Empresas() {
 
     return (
       <div className={stylesPageLayout.container}>
-        <h1>Gerenciamento de Empresas</h1>
-        <p>Aqui você pode ver, adicionar, editar e remover empresas do condomínio.</p>
+        <h3>{titulo}</h3>
 
         {!showForm && (
           <Button
