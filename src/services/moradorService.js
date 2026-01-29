@@ -74,11 +74,6 @@ const moradorService = {
     }
   },
 
-  getAllAsArray: async (token) => {
-    const data = await moradorService.getAll(token);
-    return Array.isArray(data) ? data : (data?.items || []);
-  },
-
   create: async (moradorData, token) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");

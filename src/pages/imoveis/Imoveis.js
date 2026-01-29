@@ -111,9 +111,11 @@ function Imoveis() {
     return (
       <div className={stylesPageLayout.container}>
         <h1>Gerenciamento de Imóveis</h1>
-        <p>Aqui você pode ver, adicionar, editar e remover imóveis do condomínio.</p>
+        {user.role === 'Sindico' && (
+          <p>Aqui você pode ver, adicionar, editar e remover imóveis do condomínio.</p>
+        )}
 
-        {!showForm && (
+        {!showForm && user.role === 'Sindico' && (
           <Button
             onClick={() => setShowForm(true)}
             variant="primary"

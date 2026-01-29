@@ -61,6 +61,8 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         value={imovel.bloco}
                         onChange={handleChange}
                         ref={blocoRef}
+                        minLength={1}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -72,6 +74,8 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         name="apartamento"
                         value={imovel.apartamento}
                         onChange={handleChange}
+                        minLength={1}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -83,6 +87,8 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         name="boxGaragem"
                         value={imovel.boxGaragem}
                         onChange={handleChange}
+                        minLength={1}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />

@@ -28,7 +28,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
         email: '',
         senha: '',
         host: '',
-        porta: '',
+        porta: 0,
         cep: '',
         uf: '',
         cidade: '',
@@ -96,6 +96,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         value={empresa.razaoSocial}
                         onChange={handleChange}
                         ref={razaoSocialRef}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -108,6 +110,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="fantasia"
                         value={empresa.fantasia}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -148,6 +152,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="nome"
                         value={empresa.nome}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -187,6 +193,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="email"
                         value={empresa.email}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -199,6 +207,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="senha"
                         value={empresa.senha}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -211,6 +221,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="host"
                         value={empresa.host}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -223,6 +235,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="porta"
                         value={empresa.porta}
                         onChange={handleChange}
+                        minLength={2}
+                        maxLength={10}
                         autoComplete="off"
                         className={stylesInput.input}
                         required
@@ -249,9 +263,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="uf"
                         name="uf"
                         value={empresa.uf}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
+                        readOnly
+                        className={stylesInput.disabledInput}
                     />
                 </div>
 
@@ -261,9 +274,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="cidade"
                         name="cidade"
                         value={empresa.cidade}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
+                        readOnly
+                        className={stylesInput.disabledInput}
                     />
                 </div>
 
@@ -273,9 +285,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="endereco"
                         name="endereco"
                         value={empresa.endereco}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
+                        readOnly
+                        className={stylesInput.disabledInput}
                     />
                 </div>
 
@@ -285,9 +296,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="bairro"
                         name="bairro"
                         value={empresa.bairro}
-                        onChange={handleChange}
-                        autoComplete="off"
-                        required
+                        readOnly
+                        className={stylesInput.disabledInput}
                     />
                 </div>
 
@@ -298,6 +308,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         name="complemento"
                         value={empresa.complemento}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                     />
                 </div>

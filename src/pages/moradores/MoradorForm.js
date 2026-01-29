@@ -127,6 +127,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         value={morador.nome}
                         onChange={handleChange}
                         ref={nomeRef}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />
@@ -153,6 +155,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         name="email"
                         value={morador.email}
                         onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
                         autoComplete="off"
                         required
                     />

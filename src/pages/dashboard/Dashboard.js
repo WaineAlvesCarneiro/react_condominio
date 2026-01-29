@@ -26,14 +26,14 @@ function Dashboard() {
 
     try {
       setLoading(true);
-      if (user.role !== 'Sindico' || user.role !== 'Porteiro') {
-        setLoading(false);
+      if (user.role !== 'Sindico' && user.role !== 'Porteiro') {
+        setLoading(false); console.log("Role do usuário não autorizada para acessar o dashboard:", user.role);
         setError("Acesso não autorizado. Usuário com Role incorreta ou inválida.");
         return;
       }
-      const dataImoveis = await imovelService.getAll(user.token);
+      const dataImoveis = await imovelService.getAll(user.token);console.log("Dados de imóveis recebidos:", dataImoveis);
       setImoveis(dataImoveis);
-      const dataMoradores = await moradorService.getAll(user.token);
+      const dataMoradores = await moradorService.getAll(user.token);console.log("Dados de moradores recebidos:", dataMoradores);
       setMoradores(dataMoradores);
       setError(null);
     } catch (err) {
