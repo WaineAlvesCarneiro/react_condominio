@@ -33,6 +33,12 @@ function Sidebar() {
             <Link to="/empresas" className={styles.navLink}>Empresas</Link>
           </li>
         )}
+        
+        {['Suporte'].includes(user?.role) && (
+          <li>
+            <Link to="/auths" className={styles.navLink}>Usuários</Link>
+          </li>
+        )}
       </ul>
     </nav>
   );

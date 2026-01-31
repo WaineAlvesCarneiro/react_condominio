@@ -1,4 +1,4 @@
-// src\pages\login\Login.js
+// src\pages\auths\Login.js
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';

@@ -6,13 +6,14 @@ import { AuthProvider } from './hooks/useAuth';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Login from './pages/login/Login';
+import Login from './pages/auths/Login';
 import PrivateRoute from './components/common/PrivateRoute';
 import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/dashboard/Dashboard';
 import Imoveis from './pages/imoveis/Imoveis';
 import Moradores from './pages/moradores/Moradores';
 import Empresas from './pages/empresas/Empresas';
+import Auths from './pages/auths/Auths';
 import HomeRedirect from './components/layout/Home';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
 
               <Route element={<PrivateRoute allowedRoles={['Suporte']} />}>
                 <Route path="empresas" element={<Empresas />} />
+                <Route path="auths" element={<Auths />} />
               </Route>
 
             </Route>
