@@ -10,6 +10,8 @@ import stylesPageLayout from '../../components/layout/PageLayout.module.css';
 import { authService } from '../../services/authService';
 import AuthForm from './AuthForm';
 import AuthsTable from './AuthsTable';
+import { parseIsoDateLocal } from '../../utils/formatters';
+
 // import styles from './Auths.module.css';
 
 function Auths() {
@@ -60,11 +62,19 @@ function Auths() {
   const handleSave = async (authData) => {
     try {
       if (editingAuth) {
-        await authService.update({ ...authData, id: editingAuth.id }, user.token);
+        const dadosFormatados = {
+          ...authData,
+          dataAlteracao: parseIsoDateLocal(new Date()),
+        };
+        await authService.update({ ...dadosFormatados, id: editingAuth.id }, user.token);
         notificationService.success('Usuário atualizado com sucesso!');
         setEditingAuth(null);
       } else {
-        await authService.create(authData, user.token);
+        const dadosFormatados = {
+          ...authData,
+          dataInclusao: parseIsoDateLocal(new Date()),
+        };
+        await authService.create(dadosFormatados, user.token);
         notificationService.success('Usuário adicionado com sucesso!');
       }
       setShowForm(false);

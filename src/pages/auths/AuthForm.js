@@ -6,24 +6,46 @@ import Input from '../../components/common/Input';
 import stylesForm from '../../components/common/Form.module.css';
 import { useEnum } from '../../hooks/useEnum'
 import Select from '../../components/common/Select';
-import stylesInput from '../../components/common/Input.module.css';
+import { notificationService } from '../../services/notificationService';
+import { useAuth } from '../../hooks/useAuth';
+import empresaService from '../../services/empresaService';
 
 // import styles from './AuthForm.module.css';
 
 function AuthForm({ onSave, onCancel, authData }) {
-    const { options: tipoPerfilOptions, loading: loadingEnums } = useEnum('tipo-role');
-
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
+    const { options: tipoPerfilOptions, loading: loadingEnums } = useEnum('tipo-role');
+    
     const [auth, setAuth] = useState(authData || {
         id: 0,
         empresaId: 0,
         userName: '',
-        passwordHash: '',
+        email: '',
         role: '',
         dataInclusao: null,
         dataAlteracao: null
     });
     const userNameRef = useRef(null);
+    const [empresas, setEmpresas] = useState([]);
+
+   useEffect(() => {
+        const fetchEmpresas = async () => {
+            if (user?.token) {
+                try {
+                    const data = await empresaService.getAll(user.token);
+                    const options = data.map(empresa => ({
+                        value: empresa.id,
+                        label: empresa.razaoSocial
+                    }));
+                    setEmpresas(options);
+                } catch (err) {
+                    notificationService.error(`${err.message}`);
+                }
+            }
+        };
+        fetchEmpresas();
+    }, [user]);
 
     useEffect(() => {
         if (userNameRef.current) {
@@ -32,14 +54,26 @@ function AuthForm({ onSave, onCancel, authData }) {
     }, [authData]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setAuth(prev => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setAuth(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await onSave(auth);
+
+        const toSend = {
+            userName: auth.userName,
+            email: auth.email,
+            role: parseInt(auth.role),
+            empresaId: auth.empresaId ? parseInt(auth.empresaId) : null,
+            dataInclusao: new Date().toISOString()
+        };
+        
+        await onSave(toSend);
         setLoading(false);
     };
 
@@ -60,6 +94,7 @@ function AuthForm({ onSave, onCancel, authData }) {
                         />
                     </div>
                 )}
+
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="userName">Usuário:</label>
                     <Input
@@ -75,11 +110,11 @@ function AuthForm({ onSave, onCancel, authData }) {
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
-                    <label htmlFor="passwordHash">Senha:</label>
+                    <label htmlFor="email">E-mail:</label>
                     <Input
-                        id="passwordHash"
-                        name="passwordHash"
-                        value={auth.passwordHash}
+                        id="email"
+                        name="email"
+                        value={auth.email}
                         onChange={handleChange}
                         minLength={1}
                         maxLength={100}
@@ -102,15 +137,12 @@ function AuthForm({ onSave, onCancel, authData }) {
                 </div>
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="empresaId">Empresa:</label>
-                    <Input
+                    <Select
                         id="empresaId"
                         name="empresaId"
                         value={auth.empresaId}
                         onChange={handleChange}
-                        minLength={2}
-                        maxLength={10}
-                        autoComplete="off"
-                        className={stylesInput.input}
+                        options={empresas}
                         required
                     />
                 </div>

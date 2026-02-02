@@ -15,9 +15,11 @@ import { useEnum } from '../../hooks/useEnum'
 function EmpresaForm({ onSave, onCancel, empresaData }) {
     const [loading, setLoading] = useState(false);
     const { options: tipoCondominioOptions, loading: loadingEnums } = useEnum('tipo-condominio');
+    const { options: tipoEmpresaAtivoOptions, loading: loadingAtivoEnums } = useEnum('tipo-empresa-ativo');
 
     const [empresa, setEmpresa] = useState(empresaData || {
         id: 0,
+        ativa: '',
         razaoSocial: '',
         fantasia: '',
         cnpj: '',
@@ -87,6 +89,20 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         <Input id="id" name="id" value={empresa.id} disabled />
                     </div>
                 )}
+
+                <div className={stylesForm.formGroup}>
+                    <label htmlFor="ativo">Atatus:</label>
+                    <Select
+                        id="ativo"
+                        name="ativo"
+                        value={empresa.ativo}
+                        onChange={handleChange}
+                        options={tipoEmpresaAtivoOptions}
+                        disabled={loadingAtivoEnums}
+                        firstOptionLabel={loadingAtivoEnums ? "Carregando..." : "Selecione uma opção"}
+                        required
+                    />
+                </div>
 
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="razaoSocial">Razão Social:</label>

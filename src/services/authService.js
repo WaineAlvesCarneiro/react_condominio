@@ -32,6 +32,11 @@ export const authService = {
     }
   },
 
+  definirSenhaPermanente: async (novaSenha) => {
+    const response = await api.post('/auth/definir-senha-permanente', { novaSenha });
+    return response.data;
+  },
+
   getAll: async (token) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
@@ -108,7 +113,7 @@ export const authService = {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/auth`, {
+    const response = await fetch(`${API_URL}/auth/criar-usuario`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

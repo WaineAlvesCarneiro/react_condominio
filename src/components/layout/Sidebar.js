@@ -34,7 +34,7 @@ function Sidebar() {
           </li>
         )}
         
-        {['Suporte'].includes(user?.role) && (
+        {['Suporte', 'Sindico'].includes(user?.role) && (
           <li>
             <Link to="/auths" className={styles.navLink}>Usuários</Link>
           </li>

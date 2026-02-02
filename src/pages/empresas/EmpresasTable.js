@@ -11,6 +11,7 @@ import { useEnum } from '../../hooks/useEnum';
 
 function EmpresasTable({ empresas, onEdit, onDelete }) {
   const { options: tipoCondominioOptions } = useEnum('tipo-condominio');
+  const { options: tipoEmpresaAtivoOptions } = useEnum('tipo-empresa-ativo');
 
   const data = Array.isArray(empresas) 
     ? empresas 
@@ -21,12 +22,18 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
     return option ? option.label : 'Não definido';
   };
 
+  const getTipoEmpresaAtivoLabel = (id) => {
+    const option = tipoEmpresaAtivoOptions.find(opt => opt.value === id);
+    return option ? option.label : 'Não definido';
+  };
+
   return (
     <div className={stylesPageLayout.tableContainer}>
       <table className={stylesDataTable.dataTable}>
         <thead>
           <tr>
             <th>Código</th>
+            <th>Ativo</th>
             <th>Razão Social</th>
             <th>Fantasia</th>
             <th>Cnpj</th>
@@ -45,6 +52,7 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
           {data.map(empresa => (
             <tr key={empresa.id}>
               <td>{empresa.id}</td>
+              <td>{getTipoEmpresaAtivoLabel(empresa.ativo)}</td>
               <td>{empresa.razaoSocial}</td>
               <td>{empresa.fantasia}</td>
               <td>{formatarCnpj(empresa.cnpj)}</td>

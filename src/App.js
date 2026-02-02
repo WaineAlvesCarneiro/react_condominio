@@ -1,12 +1,11 @@
-// src/App.js
-
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/useAuth';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import Login from './pages/auths/Login';
+import DefinirSenha from './pages/auths/DefinirSenha'; // Nova página
 import PrivateRoute from './components/common/PrivateRoute';
 import MainLayout from './components/layout/MainLayout';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -24,6 +23,10 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           <Route element={<PrivateRoute allowedRoles={['Suporte', 'Sindico', 'Porteiro']} />}>
+             <Route path="/definir-senha-permanente" element={<DefinirSenha />} />
+          </Route>
+
+          <Route element={<PrivateRoute allowedRoles={['Suporte', 'Sindico', 'Porteiro']} />}>
             <Route path="/" element={<MainLayout />}>
               <Route index element={<HomeRedirect />} />
 
@@ -37,11 +40,13 @@ function App() {
                 <Route path="empresas" element={<Empresas />} />
                 <Route path="auths" element={<Auths />} />
               </Route>
-
+              
             </Route>
           </Route>
           
           <Route path="/unauthorized" element={<h1>Acesso Negado</h1>} />
+          {/* Redireciona qualquer rota inexistente para o dashboard ou login */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
       <ToastContainer position="top-right" autoClose={3000} />

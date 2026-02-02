@@ -96,16 +96,16 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
         e.preventDefault();
         setLoading(true);
 
-        const moradorToSend = {
+        const toSend = {
             ...morador,
             dataEntrada: morador.dataEntrada ? formatarData(morador.dataEntrada) : null,
             dataSaida: morador.dataSaida ? formatarData(morador.dataSaida) : null,
             imovelId: parseInt(morador.imovelId)
         };
 
-        delete moradorToSend.imovelDto;
+        delete toSend.imovelDto;
 
-        await onSave(moradorToSend);
+        await onSave(toSend);
         setLoading(false);
     };
 
