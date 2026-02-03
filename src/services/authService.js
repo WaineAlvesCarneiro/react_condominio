@@ -16,13 +16,10 @@ export const authService = {
 
     } catch (error) {
       if (error.response) {
-        const status = error.response.status;
-        const errorData = error.response.data;
-
-        if (status === 401) {
+        if (error.response.status === 401) {
           throw new Error('Usuário ou senha inválidos.');
         } else {
-          throw new Error(errorData.title || 'Erro na requisição. Tente novamente.');
+          throw new Error(error.response.data.erro);
         }
       } else if (error.request) {
         throw new Error('Sem resposta do servidor. Verifique sua conexão.');

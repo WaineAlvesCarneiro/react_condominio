@@ -19,7 +19,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
 
     const [empresa, setEmpresa] = useState(empresaData || {
         id: 0,
-        ativa: '',
+        ativo: '',
         razaoSocial: '',
         fantasia: '',
         cnpj: '',
@@ -75,6 +75,12 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        // console.log('empresa', empresa)
+        // const toSend = {
+        //     ...empresa,
+        //     ativo: parseInt(empresa.ativo)
+        // };        
+        // await onSave(toSend);
         await onSave(empresa);
         setLoading(false);
     };
@@ -89,21 +95,21 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         <Input id="id" name="id" value={empresa.id} disabled />
                     </div>
                 )}
-
-                <div className={stylesForm.formGroup}>
-                    <label htmlFor="ativo">Atatus:</label>
-                    <Select
-                        id="ativo"
-                        name="ativo"
-                        value={empresa.ativo}
-                        onChange={handleChange}
-                        options={tipoEmpresaAtivoOptions}
-                        disabled={loadingAtivoEnums}
-                        firstOptionLabel={loadingAtivoEnums ? "Carregando..." : "Selecione uma opção"}
-                        required
-                    />
-                </div>
-
+                {empresa.id > 0 && (
+                    <div className={stylesForm.formGroup}>
+                        <label htmlFor="ativo">Ativo:</label>
+                        <Select
+                            id="ativo"
+                            name="ativo"
+                            value={empresa.ativo}
+                            onChange={handleChange}
+                            options={tipoEmpresaAtivoOptions}
+                            disabled={loadingAtivoEnums}
+                            firstOptionLabel={loadingAtivoEnums ? "Carregando..." : "Selecione uma opção"}
+                            required
+                        />
+                    </div>
+                )}
                 <div className={stylesForm.formGroup}>
                     <label htmlFor="razaoSocial">Razão Social:</label>
                     <Input
@@ -279,7 +285,10 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="uf"
                         name="uf"
                         value={empresa.uf}
-                        readOnly
+                        onChange={handleChange}
+                        minLength={2}
+                        maxLength={2}
+                        // readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -290,7 +299,10 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="cidade"
                         name="cidade"
                         value={empresa.cidade}
-                        readOnly
+                        onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
+                        // readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -301,7 +313,10 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="endereco"
                         name="endereco"
                         value={empresa.endereco}
-                        readOnly
+                        onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
+                        // readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -312,7 +327,10 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         id="bairro"
                         name="bairro"
                         value={empresa.bairro}
-                        readOnly
+                        onChange={handleChange}
+                        minLength={3}
+                        maxLength={100}
+                        // readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>

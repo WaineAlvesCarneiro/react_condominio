@@ -16,9 +16,11 @@ function AuthForm({ onSave, onCancel, authData }) {
     const [loading, setLoading] = useState(false);
     const { user } = useAuth();
     const { options: tipoPerfilOptions, loading: loadingEnums } = useEnum('tipo-role');
+    const { options: tipoUserAtivoOptions, loading: loadingAtivoEnums } = useEnum('tipo-user-ativo');
     
     const [auth, setAuth] = useState(authData || {
         id: 0,
+        ativo: '',
         empresaId: 0,
         userName: '',
         email: '',
@@ -29,7 +31,7 @@ function AuthForm({ onSave, onCancel, authData }) {
     const userNameRef = useRef(null);
     const [empresas, setEmpresas] = useState([]);
 
-   useEffect(() => {
+    useEffect(() => {
         const fetchEmpresas = async () => {
             if (user?.token) {
                 try {
@@ -66,11 +68,8 @@ function AuthForm({ onSave, onCancel, authData }) {
         setLoading(true);
 
         const toSend = {
-            userName: auth.userName,
-            email: auth.email,
-            role: parseInt(auth.role),
-            empresaId: auth.empresaId ? parseInt(auth.empresaId) : null,
-            dataInclusao: new Date().toISOString()
+            ...auth,
+            empresaId: parseInt(auth.empresaId)
         };
         
         await onSave(toSend);
@@ -81,7 +80,7 @@ function AuthForm({ onSave, onCancel, authData }) {
         <div className={stylesForm.formContainer}>
             <h2>{authData ? 'Editar Usuário' : 'Adicionar Novo Usuário'}</h2>
             <form onSubmit={handleSubmit}>
-                {auth.id > 0 && (
+                {/* {auth.dataInclusao === null && (
                     <div className={stylesForm.formGroup}>
                         <label htmlFor="id">Código:</label>
                         <Input
@@ -91,6 +90,21 @@ function AuthForm({ onSave, onCancel, authData }) {
                             onChange={handleChange}
                             autoComplete="off"
                             disabled
+                        />
+                    </div>
+                )} */}
+                {auth.id !== 0 && (
+                    <div className={stylesForm.formGroup}>
+                        <label htmlFor="ativo">Ativo:</label>
+                        <Select
+                            id="ativo"
+                            name="ativo"
+                            value={auth.ativo}
+                            onChange={handleChange}
+                            options={tipoUserAtivoOptions}
+                            disabled={loadingAtivoEnums}
+                            firstOptionLabel={loadingAtivoEnums ? "Carregando..." : "Selecione uma opção"}
+                            required
                         />
                     </div>
                 )}
@@ -122,31 +136,33 @@ function AuthForm({ onSave, onCancel, authData }) {
                         required
                     />
                 </div>
-                <div className={stylesForm.formGroup}>
-                    <label htmlFor="role">Tipo De Condomínio:</label>
-                    <Select
-                        id="role"
-                        name="role"
-                        value={auth.role}
-                        onChange={handleChange}
-                        options={tipoPerfilOptions}
-                        disabled={loadingEnums}
-                        firstOptionLabel={loadingEnums ? "Carregando..." : "Selecione uma opção"}
-                        required
-                    />
-                </div>
-                <div className={stylesForm.formGroup}>
-                    <label htmlFor="empresaId">Empresa:</label>
-                    <Select
-                        id="empresaId"
-                        name="empresaId"
-                        value={auth.empresaId}
-                        onChange={handleChange}
-                        options={empresas}
-                        required
-                    />
-                </div>
-
+                {(user.role === 'Suporte') && (
+                    <div className={stylesForm.formGroup}>
+                        <label htmlFor="role">Perfil de Acesso:</label>
+                        <Select
+                            id="role"
+                            name="role"
+                            value={auth.role}
+                            onChange={handleChange}
+                            options={tipoPerfilOptions}
+                            disabled={loadingEnums}
+                            firstOptionLabel={loadingEnums ? "Carregando..." : "Selecione uma opção"}
+                            required
+                        />
+                    </div>
+                )}
+                {(user.role === 'Suporte') && (
+                    <div className={stylesForm.formGroup}>
+                        <label htmlFor="empresaId">Empresa:</label>
+                        <Select
+                            id="empresaId"
+                            name="empresaId"
+                            value={auth.empresaId}
+                            onChange={handleChange}
+                            options={empresas}
+                        />
+                    </div>
+                )}
                 <div className={stylesForm.formActions}>
                     <Button
                         type="submit"

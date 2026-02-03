@@ -73,6 +73,7 @@ function Auths() {
         const dadosFormatados = {
           ...authData,
           dataInclusao: parseIsoDateLocal(new Date()),
+          ativo: 1
         };
         await authService.create(dadosFormatados, user.token);
         notificationService.success('Usuário adicionado com sucesso!');
@@ -85,7 +86,11 @@ function Auths() {
   };
 
   const handleEdit = (auth) => {
-    setEditingAuth(auth);
+    const authComDatas = {
+      ...auth,
+      dataInclusao: parseIsoDateLocal(auth.dataInclusao)
+    };
+    setEditingAuth(authComDatas);
     setShowForm(true);
   };
 

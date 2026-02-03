@@ -72,6 +72,7 @@ function Empresas() {
         const dadosFormatados = {
           ...empresaData,
           dataInclusao: parseIsoDateLocal(new Date()),
+          ativo: 1,
         };
         await empresaService.create(dadosFormatados, user.token);
         notificationService.success('Empresa adicionado com sucesso!');
@@ -84,7 +85,11 @@ function Empresas() {
   };
 
   const handleEdit = (empresa) => {
-    setEditingEmpresa(empresa);
+    const empresaComDatas = {
+      ...empresa,
+      dataInclusao: parseIsoDateLocal(empresa.dataInclusao)
+    };
+    setEditingEmpresa(empresaComDatas);
     setShowForm(true);
   };
 

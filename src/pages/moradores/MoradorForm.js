@@ -55,8 +55,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
 
         return initialData;
     });
-    const [imoveis, setImoveis] = useState([]);
     const nomeRef = useRef(null);
+    const [imoveis, setImoveis] = useState([]);
 
     useEffect(() => {
         const fetchImoveis = async () => {
