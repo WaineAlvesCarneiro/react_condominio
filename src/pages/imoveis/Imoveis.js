@@ -32,7 +32,15 @@ function Imoveis() {
 
     try {
       setLoading(true);
-      const data = await imovelService.getAllPaged(user.token);
+      const empresaIdFiltro = user.empresaId;
+      const data = await imovelService.getAllPaged(
+        user.token,
+        1,
+        10,
+        'Id', 
+        'ASC', 
+        empresaIdFiltro
+      );
       setImoveis(data);
       setError(null);
     } catch (err) {
@@ -64,7 +72,12 @@ function Imoveis() {
         notificationService.success('Imóvel atualizado com sucesso!');
         setEditingImovel(null);
       } else {
-        await imovelService.create(imovelData, user.token);
+        const IdEmpresa = user.empresaId;
+        const dadosFormatados = {
+          ...imovelData,
+           empresaId: IdEmpresa
+        };
+        await imovelService.create(dadosFormatados, user.token);
         notificationService.success('Imóvel adicionado com sucesso!');
       }
       setShowForm(false);

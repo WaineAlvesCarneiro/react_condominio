@@ -1,10 +1,10 @@
-// src\pages\dashboard\Dashboard.js
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/common/Button';
 import styles from './Dashboard.module.css';
+import { authService } from '../../services/authService';
+import empresaService from '../../services/empresaService';
 import imovelService from '../../services/imovelService';
 import moradorService from '../../services/moradorService';
 
@@ -13,29 +13,49 @@ function Dashboard() {
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+  
+  const [data, setData] = useState({
+    usuarios: [],
+    empresas: [],
+    imoveis: [],
+    moradores: []
+  });
 
-  const [imoveis, setImoveis] = useState([]);
-  const [moradores, setMoradores] = useState([]);
-  const titulo = 'Bem-vindo ao Painel de Controle do Condomínio!'
+  const titulo = 'Bem-vindo ao Painel de Controle!';
 
   const fetchDashboard = useCallback(async () => {
-    if (!user || !user.token) {
-      setError("Acesso não autorizado. Por favor, faça login.");
+    if (!user?.token) {
+      setError("Acesso não autorizado.");
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      if (user.role !== 'Sindico' && user.role !== 'Porteiro') {
-        setLoading(false);
-        setError("Acesso não autorizado. Usuário com Role incorreta ou inválida.");
-        return;
+      const { role, token, empresaId } = user;
+      const requests = [];
+
+      // Definição do que cada Role pode buscar
+      if (role !== 'Porteiro') {
+        requests.push(authService.getAll(token, empresaId).then(res => ({ usuarios: res })));
       }
-      const dataImoveis = await imovelService.getAll(user.token);
-      setImoveis(dataImoveis);
-      const dataMoradores = await moradorService.getAll(user.token);
-      setMoradores(dataMoradores);
+      
+      if (role === 'Suporte') {
+        requests.push(empresaService.getAll(token, empresaId).then(res => ({ empresas: res })));
+      }
+
+      if (role === 'Sindico' || role === 'Porteiro') {
+        requests.push(imovelService.getAll(token, empresaId).then(res => ({ imoveis: res })));
+        requests.push(moradorService.getAll(token, empresaId).then(res => ({ moradores: res })));
+      }
+
+      // Executa todas as requisições em paralelo (Performance!)
+      const results = await Promise.all(requests);
+      
+      // Mescla os resultados no estado
+      const combinedData = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      setData(prev => ({ ...prev, ...combinedData }));
+      
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -48,76 +68,40 @@ function Dashboard() {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  if (loading) {
-    return (
-      <div className={styles.dashboardContainer}>
-        <h3>{titulo}</h3>
-        <p>Carregando dados...</p>
+  if (loading) return <div className={styles.dashboardContainer}><p>Carregando dados...</p></div>;
+  if (error) return <div className={styles.dashboardContainer}><p style={{ color: 'red' }}>{error}</p></div>;
+
+  // Função auxiliar para renderizar cards para evitar repetição de JSX
+  const renderCard = (title, count, path) => (
+    <div className={styles.dashboardCard}>
+      <h2>{title}</h2>
+      <p>Total: {count}</p>
+      <Button variant="secondary" size="medium" onClick={() => navigate(path)}>
+        Ver Detalhes
+      </Button>
+    </div>
+  );
+
+  return (
+    <div className={styles.dashboardContainer}>
+      <h3>{user.role === 'Suporte' ? 'Painel Administrativo' : titulo}</h3>
+      <div className={styles.dashboardGrid}>
+        
+        {/* Renderização Condicional Limpa */}
+        {user.role === 'Suporte' && renderCard("Empresas Cadastradas", data.empresas.length, '/empresas')}
+        
+        {user.role !== 'Porteiro' && renderCard("Usuários Cadastrados", data.usuarios.length, '/auths')}
+        
+        {(user.role === 'Sindico' || user.role === 'Porteiro') && (
+          <>
+            {renderCard("Imóveis Cadastrados", data.imoveis.length, '/imoveis')}
+            {renderCard("Moradores Ativos", data.moradores.length, '/moradores')}
+          </>
+        )}
+        
       </div>
-    );
-  }
-
-  if (error && user.role !== 'Suporte' && user.role !== 'Sindico' && user.role !== 'Porteiro') {
-    return (
-      <div className={styles.dashboardContainer}>
-        <p>Erro ao acessar a pagina favor entrar em contato com suporte.</p>
-        <p style={{ color: 'red' }}>Erro: {error}</p>
-      </div>
-    );
-  }
-
-  if (user.role === 'Suporte') {
-    return (
-      <div className={styles.dashboardContainer}>
-        <h3>Bem-vindo!</h3>
-      </div>
-    );
-  }
-  if (user.role === 'Sindico' || user.role === 'Porteiro') {
-    return (
-      <div className={styles.dashboardContainer}>
-        <h3>{titulo}</h3>
-
-        <div className={styles.dashboardGrid}>
-          <div className={styles.dashboardCard}>
-            <h2>Imóveis Cadastrados</h2>
-            <p>Total: {imoveis.length}</p>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => navigate('/imoveis')}
-            >
-              Ver Detalhes
-            </Button>
-          </div>
-
-          <div className={styles.dashboardCard}>
-            <h2>Moradores Ativos</h2>
-            <p>Total: {moradores.length}</p>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => navigate('/moradores')}
-            >
-              Ver Detalhes
-            </Button>
-          </div>
-
-          <div className={styles.dashboardCard}>
-            <h2>Alertas Recentes</h2>
-            <p>'falta implementar'</p>
-            <Button
-              variant="warning"
-              size="medium"
-              onClick={() => navigate('/dashboard')}
-            >
-              Ver Alertas
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Dashboard;

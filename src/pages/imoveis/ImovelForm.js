@@ -32,7 +32,11 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await onSave(imovel);
+        const toSend = {
+            ...imovel,
+            empresaId: parseInt(imovel.empresaId)
+        };
+        await onSave(toSend);
         setLoading(false);
     };
 

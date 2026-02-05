@@ -3,12 +3,22 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
 const imovelService = {
-  getAll: async (token) => {
+  getAll: async (token, empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/imovel`, {
+    const queryParams = new URLSearchParams({
+      empresaId
+    });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
+
+    const url = `${API_URL}/imovel?${queryParams.toString()}`;
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +44,7 @@ const imovelService = {
     }
   },
 
-  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC') => {
+  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC', empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
@@ -43,8 +53,13 @@ const imovelService = {
       page: page.toString(),
       linesPerPage: linesPerPage.toString(),
       orderBy,
-      direction
+      direction,
+      empresaId
     });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
 
     const url = `${API_URL}/imovel/paginado?${queryParams.toString()}`;
 

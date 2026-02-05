@@ -33,7 +33,15 @@ function Moradores() {
 
     try {
       setLoading(true);
-      const data = await moradorService.getAllPaged(user.token);
+      const empresaIdFiltro = user.empresaId;
+      const data = await moradorService.getAllPaged(
+        user.token,
+        1,
+        10,
+        'Id', 
+        'ASC', 
+        empresaIdFiltro
+      );
       setMoradores(data);
       setError(null);
     } catch (err) {
@@ -100,10 +108,12 @@ function Moradores() {
         notificationService.success('Morador atualizado com sucesso!');
         setEditingMorador(null);
       } else {
+        const IdEmpresa = user.empresaId;
         const dadosFormatados = {
           ...moradorData,
           dataEntrada: parseIsoDateLocal(moradorData.dataEntrada),
           dataInclusao: parseIsoDateLocal(new Date()),
+          empresaId: IdEmpresa
         };
 
         await moradorService.create(dadosFormatados, user.token);

@@ -62,7 +62,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
         const fetchImoveis = async () => {
             if (user?.token) {
                 try {
-                    const data = await imovelService.getAll(user.token);
+                    const IdEmpresa = user.empresaId;
+                    const data = await imovelService.getAll(user.token, IdEmpresa);
                     const options = data.map(imovel => ({
                         value: imovel.id,
                         label: `Bloco ${imovel.bloco} - Apartamento ${imovel.apartamento}`
@@ -100,7 +101,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
             ...morador,
             dataEntrada: morador.dataEntrada ? formatarData(morador.dataEntrada) : null,
             dataSaida: morador.dataSaida ? formatarData(morador.dataSaida) : null,
-            imovelId: parseInt(morador.imovelId)
+            imovelId: parseInt(morador.imovelId),
+            empresaId: parseInt(morador.empresaId)
         };
 
         delete toSend.imovelDto;

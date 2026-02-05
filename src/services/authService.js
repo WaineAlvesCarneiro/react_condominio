@@ -34,12 +34,22 @@ export const authService = {
     return response.data;
   },
 
-  getAll: async (token) => {
+  getAll: async (token, empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/auth`, {
+    const queryParams = new URLSearchParams({
+      empresaId
+    });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
+
+    const url = `${API_URL}/auth?${queryParams.toString()}`;
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +75,7 @@ export const authService = {
     }
   },
 
-  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC') => {
+  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC', empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
@@ -74,8 +84,13 @@ export const authService = {
       page: page.toString(),
       linesPerPage: linesPerPage.toString(),
       orderBy,
-      direction
+      direction,
+      empresaId
     });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
 
     const url = `${API_URL}/auth/paginado?${queryParams.toString()}`;
 

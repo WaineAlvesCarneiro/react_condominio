@@ -34,7 +34,15 @@ function Auths() {
 
     try {
       setLoading(true);
-      const data = await authService.getAllPaged(user.token);
+      const empresaIdFiltro = user.empresaId;
+      const data = await authService.getAllPaged(
+        user.token,
+        1,
+        10,
+        'Id', 
+        'ASC', 
+        empresaIdFiltro
+      );
       setAuths(data);
       setError(null);
     } catch (err) {

@@ -3,12 +3,22 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
 const moradorService = {
-  getAll: async (token) => {
+  getAll: async (token, empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/morador`, {
+    const queryParams = new URLSearchParams({
+      empresaId
+    });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
+
+    const url = `${API_URL}/morador?${queryParams.toString()}`;
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +44,7 @@ const moradorService = {
     }
   },
 
-  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC') => {
+  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC', empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
@@ -43,9 +53,13 @@ const moradorService = {
       page: page.toString(),
       linesPerPage: linesPerPage.toString(),
       orderBy,
-      direction
+      direction,
+      empresaId
     });
 
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
     const url = `${API_URL}/morador/paginado?${queryParams.toString()}`;
 
     const response = await fetch(url, {

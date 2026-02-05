@@ -29,8 +29,8 @@ function DefinirSenha() {
       return;
     }
 
-    if (novaSenha.length < 8) {
-      toast.error("A senha deve ter pelo menos 8 caracteres.");
+    if (novaSenha.length < 5) {
+      toast.error("A senha deve ter pelo menos 5 caracteres.");
       return;
     }
 
