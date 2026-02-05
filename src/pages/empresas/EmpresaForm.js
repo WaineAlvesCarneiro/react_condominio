@@ -41,6 +41,15 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
         dataAlteracao: null,
     });
 
+    const [errors, setErrors] = useState({});
+
+    const validarCNPJ = (cnpj) => {
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+        if (cnpj.length !== 14) return false;
+        // ... lógica de validação (opcional repetir no front ou apenas esperar o back)
+        return true;
+    };
+
     const handleCepAccept = async (value) => {
         setEmpresa(prev => ({ ...prev, cep: value }));
 
@@ -75,12 +84,6 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // console.log('empresa', empresa)
-        // const toSend = {
-        //     ...empresa,
-        //     ativo: parseInt(empresa.ativo)
-        // };        
-        // await onSave(toSend);
         await onSave(empresa);
         setLoading(false);
     };
@@ -145,12 +148,18 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         mask="00.000.000/0000-00"
                         value={empresa.cnpj}
                         unmask={true}
-                        onAccept={(value) => setEmpresa(prev => ({ ...prev, cnpj: value }))}
-                        autoComplete="off"
-                        placeholder="00.000.000/0000-00"
-                        className={stylesInput.input}
+                        onAccept={(value) => {
+                            setEmpresa(prev => ({ ...prev, cnpj: value }));
+                            if (value.length === 14 && !validarCNPJ(value)) {
+                                setErrors(prev => ({ ...prev, cnpj: 'CNPJ inválido' }));
+                            } else {
+                                setErrors(prev => ({ ...prev, cnpj: null }));
+                            }
+                        }}
+                        className={`${stylesInput.input} ${errors.cnpj ? stylesInput.inputError : ''}`}
                         required
                     />
+                    {errors.cnpj && <span className={stylesForm.errorMessage}>{errors.cnpj}</span>}
                 </div>
 
                 <div className={stylesForm.formGroup}>
