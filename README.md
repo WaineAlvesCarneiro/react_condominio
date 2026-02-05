@@ -1,18 +1,38 @@
 Condomínio
 
-Bem-vindo ao repositório do projeto react_condominio! Este é um sistema para a gestão de condomínios.
+Bem-vindo ao repositório do projeto react_condominio. Esse é o front-end do sistema de gerenciamento de condomínios.
 
-Descrição do Projeto
+É um sistema projetado para Cloud permitindo que sejam cadastradas diversos condomínios como empresas, e diversos usuários.
 
-Este projeto tem como objetivo principal fornecer uma plataforma digital para a administração de condomínios, incluindo.
+Observação: O back-end tem duas camadas de apresentação: Uma camada de apresentação com endpoints Controller e outra com Minimal API (incompleta no momento)
 
-Gerenciamento de Moradores e Unidades: Endpoints para o ciclo de vida completo de moradores e apartamentos.
+Esse sistema permite que ao executar localmente possa ser utilizada qualquer uma das duas camadas de apresentação com Controller ou Minimal API (incompleta no momento)
 
-Ao cadastrar ou editar os dados do morador a API envia um email para o morador.
 
-Validações de campos e ao excluir um imóvel com morador vinculado o sistema exibe uma notificação.
+Descrição do Projeto:
 
-Autenticação e Autorização: Sistema de segurança utilizando JWT para garantir que apenas usuários autorizados possam acessar a aplicação.
+Este projeto é a camada de serviços (API) que gerencia todas as informações do sistema de condomínio, incluindo:
+Ao ser executado pela primeira vez o sistema cadastra automaticamente um usuário Admin com senha
+
+Ao logar o Admin poderá:
+
+Cadastro de empresa que será o condomínio, em seguida cadastra os usuários que serão utilizados no sistema.
+
+Existe três perfis padrão de usuário que são:
+Suporte - Admin
+Síndico - administrador do condomínio
+Porteiro - responsável pelos trabalhos diários da portaria
+
+Quando logado com um usuário vinculado a uma empresa/condomínio o sistema somente irá mostrar os dados relacionados ao usuário logado de acordo com a empresa.
+
+O usuário com perfil Síndico poderá cadastrar os imóveis e também inativar usuários. Somente o usuário com perfil suporte pode cadastrar ou excluir usuários.
+
+Após cadastrar o imovel o usuário com perfil síndico pode cadastrar moradores e vincular ao seu imovel.
+
+
+Autenticação e Autorização:
+
+Sistema de segurança utilizando JWT com Role para garantir que apenas usuários autorizados possam acessar a aplicação.
 
 
 Tecnologias Utilizadas
