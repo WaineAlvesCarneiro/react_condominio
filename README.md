@@ -4,9 +4,9 @@ Bem-vindo ao repositório do projeto react_condominio. Esse é o front-end do si
 
 É um sistema projetado para Cloud permitindo que sejam cadastradas diversos condomínios como empresas, e diversos usuários.
 
-Observação: O back-end tem duas camadas de apresentação: Uma camada de apresentação com endpoints Controller e outra com Minimal API (incompleta no momento)
+Observação: O back-end tem duas camadas de apresentação: Uma camada de apresentação com endpoints Controller e outra com Minimal API
 
-Esse sistema permite que ao executar localmente possa ser utilizada qualquer uma das duas camadas de apresentação com Controller ou Minimal API (incompleta no momento)
+Esse sistema permite que ao executar localmente possa ser utilizada qualquer uma das duas camadas de apresentação com Controller ou Minimal API
 
 
 Descrição do Projeto:

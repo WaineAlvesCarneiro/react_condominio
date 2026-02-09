@@ -35,7 +35,8 @@ function AuthForm({ onSave, onCancel, authData }) {
         const fetchEmpresas = async () => {
             if (user?.token) {
                 try {
-                    const data = await empresaService.getAll(user.token);
+                    const IdEmpresa = user.empresaId;
+                    const data = await empresaService.getAll(user.token, IdEmpresa);
                     const options = data.map(empresa => ({
                         value: empresa.id,
                         label: empresa.razaoSocial

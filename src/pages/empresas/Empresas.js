@@ -159,7 +159,7 @@ function Empresas() {
           onConfirm={handleDelete}
           onCancel={handleCancel}
           title="Confirmação de Exclusão"
-          message="Tem certeza que deseja excluir este empresa?"
+          message="Tem certeza que deseja excluir esta empresa?"
         />
       </div>
     );

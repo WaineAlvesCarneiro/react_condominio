@@ -3,12 +3,22 @@
 const API_URL = process.env.REACT_APP_API_URL;
 
 const empresaService = {
-  getAll: async (token) => {
+  getAll: async (token, empresaId = null) => {
     if (!token) {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/empresa`, {
+     const queryParams = new URLSearchParams({
+      empresaId
+    });
+
+    if (empresaId) {
+        queryParams.append('empresaId', empresaId.toString());
+    }
+
+    const url = `${API_URL}/empresa?${queryParams.toString()}`;
+
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +140,7 @@ const empresaService = {
       throw new Error("Token de autenticação não fornecido.");
     }
 
-    const response = await fetch(`${API_URL}/empresaovel/${id}`, {
+    const response = await fetch(`${API_URL}/empresa/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -107,7 +107,7 @@ export const authService = {
     }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao buscar imóveis paginados.' }));
+      const errorData = await response.json().catch(() => ({ erro: 'Falha ao buscar usuários paginados.' }));
       throw new Error(errorData.erro);
     }
 

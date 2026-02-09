@@ -35,7 +35,6 @@ function Dashboard() {
       const { role, token, empresaId } = user;
       const requests = [];
 
-      // Definição do que cada Role pode buscar
       if (role !== 'Porteiro') {
         requests.push(authService.getAll(token, empresaId).then(res => ({ usuarios: res })));
       }
@@ -49,10 +48,8 @@ function Dashboard() {
         requests.push(moradorService.getAll(token, empresaId).then(res => ({ moradores: res })));
       }
 
-      // Executa todas as requisições em paralelo (Performance!)
       const results = await Promise.all(requests);
       
-      // Mescla os resultados no estado
       const combinedData = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});
       setData(prev => ({ ...prev, ...combinedData }));
       
@@ -71,7 +68,6 @@ function Dashboard() {
   if (loading) return <div className={styles.dashboardContainer}><p>Carregando dados...</p></div>;
   if (error) return <div className={styles.dashboardContainer}><p style={{ color: 'red' }}>{error}</p></div>;
 
-  // Função auxiliar para renderizar cards para evitar repetição de JSX
   const renderCard = (title, count, path) => (
     <div className={styles.dashboardCard}>
       <h2>{title}</h2>
@@ -87,7 +83,6 @@ function Dashboard() {
       <h3>{user.role === 'Suporte' ? 'Painel Administrativo' : titulo}</h3>
       <div className={styles.dashboardGrid}>
         
-        {/* Renderização Condicional Limpa */}
         {user.role === 'Suporte' && renderCard("Empresas Cadastradas", data.empresas.length, '/empresas')}
         
         {user.role !== 'Porteiro' && renderCard("Usuários Cadastrados", data.usuarios.length, '/auths')}
