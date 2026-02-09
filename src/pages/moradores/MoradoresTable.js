@@ -9,12 +9,21 @@ import { formatarCelular, formatarData } from '../../utils/formatters';
 
 import styles from './MoradoresTable.module.css';
 
-function MoradoresTable({ moradores, onEdit, onDelete }) {
+function MoradoresTable({ moradores, onEdit, onDelete, onPageChange, onSort, currentSort }) {
   const { user } = useAuth();
   
-  const data = Array.isArray(moradores) 
-    ? moradores 
-    : (moradores && moradores.items ? moradores.items : []);
+  const data = moradores?.items || [];
+  const pagination = {
+    currentPage: moradores?.currentPage || 1,
+    totalPages: moradores?.totalPages || 1,
+    hasPrevious: moradores?.hasPreviousPage,
+    hasNext: moradores?.hasNextPage
+  };
+
+  const getSortIcon = (column) => {
+    if (currentSort?.sortBy !== column) return '↕';
+    return currentSort.direction === 'ASC' ? '▲' : '▼';
+  };
 
   return (
     <div className={stylesPageLayout.tableContainer}>
@@ -22,7 +31,9 @@ function MoradoresTable({ moradores, onEdit, onDelete }) {
         <thead>
           <tr>
             <th>Código</th>
-            <th>Nome</th>
+            <th onClick={() => onSort('Nome')} style={{cursor: 'pointer'}}>
+              Nome {getSortIcon('Nome')}
+            </th>
             <th>Celular</th>
             <th>Data entrada</th>
             <th>Data saída</th>
@@ -56,28 +67,34 @@ function MoradoresTable({ moradores, onEdit, onDelete }) {
               </td>
               {user.role === 'Sindico' && (
                 <td className={stylesDataTable.action}>
-                  <Button
-                    variant="primary"
-                    size="small"
-                    onClick={() => onEdit(morador)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="small"
-                    onClick={() => onDelete(morador.id)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Excluir
-                  </Button>
+                  <Button variant="primary" size="small" onClick={() => onEdit(morador)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  {user.role === 'Suporte' && (
+                    <Button variant="danger" size="small" onClick={() => onDelete(morador.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
+                  )}
                 </td>
               )}
             </tr>
           ))}
         </tbody>
       </table>
+
+      <div className={stylesDataTable.paginationControls} style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+        <Button 
+          disabled={!pagination.hasPrevious} 
+          onClick={() => onPageChange(pagination.currentPage - 1)}
+        >
+          Anterior
+        </Button>
+        
+        <span>Página {pagination.currentPage} de {pagination.totalPages}</span>
+        
+        <Button 
+          disabled={!pagination.hasNext} 
+          onClick={() => onPageChange(pagination.currentPage + 1)}
+        >
+          Próximo
+        </Button>
+      </div>
     </div>
   );
 }

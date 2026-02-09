@@ -75,23 +75,21 @@ export const authService = {
     }
   },
 
-  getAllPaged: async (token, page = 0, linesPerPage = 10, orderBy = 'Id', direction = 'ASC', empresaId = null) => {
-    if (!token) {
-      throw new Error("Token de autenticação não fornecido.");
-    }
+  getAllPaged: async (token, page = 1, pageSize = 10, sortBy = 'Id', sortDescending = 'ASC', empresaId = null) => {
+    if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const queryParams = new URLSearchParams({
+    const params = {
       page: page.toString(),
-      linesPerPage: linesPerPage.toString(),
-      orderBy,
-      direction,
-      empresaId
-    });
+      pageSize: pageSize.toString(),
+      sortBy: sortBy,
+      sortDescending: sortDescending,
+    };
 
-    if (empresaId) {
-        queryParams.append('empresaId', empresaId.toString());
+    if (empresaId !== null && empresaId !== undefined) {
+      params.empresaId = empresaId.toString();
     }
 
+    const queryParams = new URLSearchParams(params);
     const url = `${API_URL}/auth/paginado?${queryParams.toString()}`;
 
     const response = await fetch(url, {
@@ -102,22 +100,8 @@ export const authService = {
       }
     });
 
-    if (response.status === 401) {
-      throw new Error("Token de autenticação expirado.");
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao buscar usuários paginados.' }));
-      throw new Error(errorData.erro);
-    }
-
     const result = await response.json();
-
-    if (result.sucesso) {
-      return result.dados;
-    } else {
-      throw new Error(result.erro || 'Erro desconhecido na API.');
-    }
+    return result.sucesso ? result.dados : Promise.reject(result.erro);
   },
 
   create: async (authData, token) => {

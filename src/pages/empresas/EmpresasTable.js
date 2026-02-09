@@ -9,22 +9,24 @@ import { useEnum } from '../../hooks/useEnum';
 
 // import styles from './EmpresasTable.module.css';
 
-function EmpresasTable({ empresas, onEdit, onDelete }) {
+function EmpresasTable({ empresas, onEdit, onDelete, onPageChange, onSort, currentSort }) {
   const { options: tipoCondominioOptions } = useEnum('tipo-condominio');
   const { options: tipoEmpresaAtivoOptions } = useEnum('tipo-empresa-ativo');
 
-  const data = Array.isArray(empresas) 
-    ? empresas 
-    : (empresas && empresas.items ? empresas.items : []);
-
-  const getTipoCondominioLabel = (id) => {
-    const option = tipoCondominioOptions.find(opt => opt.value === id);
-    return option ? option.label : 'Não definido';
+  const data = empresas?.items || [];
+  const pagination = {
+    currentPage: empresas?.currentPage || 1,
+    totalPages: empresas?.totalPages || 1,
+    hasPrevious: empresas?.hasPreviousPage,
+    hasNext: empresas?.hasNextPage
   };
 
-  const getTipoEmpresaAtivoLabel = (id) => {
-    const option = tipoEmpresaAtivoOptions.find(opt => opt.value === id);
-    return option ? option.label : 'Não definido';
+  const getTipoCondominioLabel = (id) => tipoCondominioOptions.find(opt => opt.value === id)?.label|| 'Não definido';
+  const getTipoEmpresaAtivoLabel = (id) => tipoEmpresaAtivoOptions.find(opt => opt.value === id)?.label || 'Não definido';
+
+  const getSortIcon = (column) => {
+    if (currentSort?.sortBy !== column) return '↕';
+    return currentSort.direction === 'ASC' ? '▲' : '▼';
   };
 
   return (
@@ -34,7 +36,9 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
           <tr>
             <th>Código</th>
             <th>Ativo</th>
-            <th>Razão Social</th>
+            <th onClick={() => onSort('RazaoSocial')} style={{cursor: 'pointer'}}>
+              Razão Social {getSortIcon('RazaoSocial')}
+            </th>
             <th>Fantasia</th>
             <th>Cnpj</th>
             <th>Tipo De Condomínio</th>
@@ -46,7 +50,7 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
         <tbody>
           {data.length === 0 && (
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center' }}>  Nenhum empresa encontrado.</td>
+              <td colSpan="9" style={{ textAlign: 'center' }}>  Nenhum empresa encontrado.</td>
             </tr>
           )}
           {data.map(empresa => (
@@ -60,27 +64,31 @@ function EmpresasTable({ empresas, onEdit, onDelete }) {
               <th>{empresa.nome}</th>
               <th>{formatarCelular(empresa.celular)}</th>
               <td className={stylesDataTable.action}>
-                <Button
-                  variant="primary"
-                  size="small"
-                  onClick={() => onEdit(empresa)}
-                  customClass={stylesDataTable.actionButton}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="danger"
-                  size="small"
-                  onClick={() => onDelete(empresa.id)}
-                  customClass={stylesDataTable.actionButton}
-                >
-                  Excluir
-                </Button>
+                <Button variant="primary" size="small" onClick={() => onEdit(empresa)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                <Button variant="danger" size="small" onClick={() => onDelete(empresa.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <div className={stylesDataTable.paginationControls} style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+        <Button 
+          disabled={!pagination.hasPrevious} 
+          onClick={() => onPageChange(pagination.currentPage - 1)}
+        >
+          Anterior
+        </Button>
+        
+        <span>Página {pagination.currentPage} de {pagination.totalPages}</span>
+        
+        <Button 
+          disabled={!pagination.hasNext} 
+          onClick={() => onPageChange(pagination.currentPage + 1)}
+        >
+          Próximo
+        </Button>
+      </div>
     </div>
   );
 }

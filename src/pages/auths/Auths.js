@@ -24,24 +24,39 @@ function Auths() {
   const [editingAuth, setEditingAuth] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Usuários';
+  const [filters, setFilters] = useState({
+    page: 1,
+    pageSize: 10,
+    sortBy: 'UserName',
+    direction: 'ASC',
+    empresaId: user.empresaId
+  });
+
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleSort = (column) => {
+    setFilters(prev => ({
+        ...prev,
+        sortBy: column,
+        direction: prev.sortBy === column && prev.direction === 'ASC' ? 'DESC' : 'ASC',
+        page: 1
+    }));
+  };
 
   const fetchAuths = useCallback(async () => {
-    if (!user || !user.token) {
-      notificationService.error('Acesso não autorizado. Por favor, faça login.');
-      setLoading(false);
-      return;
-    }
+    if (!user || !user.token) return;
 
     try {
       setLoading(true);
-      const empresaIdFiltro = user.empresaId;
       const data = await authService.getAllPaged(
         user.token,
-        1,
-        10,
-        'Id', 
-        'ASC', 
-        empresaIdFiltro
+        filters.page,
+        filters.pageSize,
+        filters.sortBy,
+        filters.direction,
+        filters.empresaId
       );
       setAuths(data);
       setError(null);
@@ -51,7 +66,7 @@ function Auths() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, filters]);
 
   useEffect(() => {
     fetchAuths();
@@ -132,46 +147,49 @@ function Auths() {
     );
   }
 
-    return (
-      <div className={stylesPageLayout.container}>
-        <h3>{titulo}</h3>
+  return (
+    <div className={stylesPageLayout.container}>
+      <h3>{titulo}</h3>
 
-        {!showForm && user.role === 'Suporte' && (
-          <Button
-            onClick={() => setShowForm(true)}
-            variant="primary"
-            size="medium"
-          >
-            Adicionar Novo Usuário
-          </Button>
-        )}
+      {!showForm && user.role === 'Suporte' && (
+        <Button
+          onClick={() => setShowForm(true)}
+          variant="primary"
+          size="medium"
+        >
+          Adicionar Novo Usuário
+        </Button>
+      )}
 
-        {showForm ? (
-          <AuthForm
-            onSave={handleSave}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingAuth(null);
-            }}
-            authData={editingAuth}
-          />
-        ) : (
-          <AuthsTable
-            auths={auths}
-            onEdit={handleEdit}
-            onDelete={confirmDelete}
-          />
-        )}
-
-        <ConfirmModal
-          show={showModal}
-          onConfirm={handleDelete}
-          onCancel={handleCancel}
-          title="Confirmação de Exclusão"
-          message="Tem certeza que deseja excluir este usuário?"
+      {showForm ? (
+        <AuthForm
+          onSave={handleSave}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingAuth(null);
+          }}
+          authData={editingAuth}
         />
-      </div>
-    );
+      ) : (
+        <AuthsTable
+          auths={auths}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
+          onPageChange={handlePageChange}
+          onSort={handleSort}
+          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+        />
+      )}
+
+      <ConfirmModal
+        show={showModal}
+        onConfirm={handleDelete}
+        onCancel={handleCancel}
+        title="Confirmação de Exclusão"
+        message="Tem certeza que deseja excluir este usuário?"
+      />
+    </div>
+  );
 }
 
 export default Auths;

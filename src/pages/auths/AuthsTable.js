@@ -1,5 +1,3 @@
-// src\pages\auths\AuthsTable.js
-
 import React from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
@@ -8,31 +6,27 @@ import stylesPageLayout from '../../components/layout/PageLayout.module.css';
 import { useEnum } from '../../hooks/useEnum';
 import { formatarData } from '../../utils/formatters';
 
-// import styles from './AuthsTable.module.css';
-
-function AuthsTable({ auths, onEdit, onDelete }) {
+function AuthsTable({ auths, onEdit, onDelete, onPageChange, onSort, currentSort }) {
   const { user } = useAuth();
   const { options: tipoPerfilOptions } = useEnum('tipo-role');
   const { options: tipoUserAtivoOptions } = useEnum('tipo-user-ativo');
   const { options: tipoEmpresaAtivoOptions } = useEnum('tipo-empresa-ativo');
 
-  const data = Array.isArray(auths) 
-    ? auths 
-    : (auths && auths.items ? auths.items : []);
-  
-  const getTipoPerfilLabel = (id) => {
-    const option = tipoPerfilOptions.find(opt => opt.value === id);
-    return option ? option.label : 'Não definido';
+  const data = auths?.items || [];
+  const pagination = {
+    currentPage: auths?.currentPage || 1,
+    totalPages: auths?.totalPages || 1,
+    hasPrevious: auths?.hasPreviousPage,
+    hasNext: auths?.hasNextPage
   };
 
-  const getTipoUserAtivoLabel = (id) => {
-    const option = tipoUserAtivoOptions.find(opt => opt.value === id);
-    return option ? option.label : 'Não definido';
-  };
+  const getTipoPerfilLabel = (id) => tipoPerfilOptions.find(opt => opt.value === id)?.label || 'Não definido';
+  const getTipoUserAtivoLabel = (id) => tipoUserAtivoOptions.find(opt => opt.value === id)?.label || 'Não definido';
+  const getTipoEmpresaAtivoLabel = (id) => tipoEmpresaAtivoOptions.find(opt => opt.value === id)?.label || 'Não definido';
 
-  const getTipoEmpresaAtivoLabel = (id) => {
-    const option = tipoEmpresaAtivoOptions.find(opt => opt.value === id);
-    return option ? option.label : 'Não definido';
+  const getSortIcon = (column) => {
+    if (currentSort?.sortBy !== column) return '↕';
+    return currentSort.direction === 'ASC' ? '▲' : '▼';
   };
 
   return (
@@ -40,11 +34,13 @@ function AuthsTable({ auths, onEdit, onDelete }) {
       <table className={stylesDataTable.dataTable}>
         <thead>
           <tr>
-            {/* <th>Código</th> */}
-            <th>Usuário</th>
-            <th>Perfil</th>
+            <th onClick={() => onSort('UserName')} style={{cursor: 'pointer'}}>
+              Usuário {getSortIcon('UserName')}
+            </th>
+            <th onClick={() => onSort('Role')} style={{cursor: 'pointer'}}>
+              Perfil {getSortIcon('Role')}
+            </th>
             <th>Data Inclusão</th>
-            <th>Data Alteração</th>
             <th>Ativo</th>
             <th>Empresa</th>
             <th>Empresa Ativa</th>
@@ -54,47 +50,48 @@ function AuthsTable({ auths, onEdit, onDelete }) {
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 && (
+          {data.length === 0 ? (
             <tr>
-              <td colSpan="5" style={{ textAlign: 'center' }}>  Nenhum usuário encontrado.</td>
+              <td colSpan="7" style={{ textAlign: 'center' }}>Nenhum usuário encontrado.</td>
             </tr>
+          ) : (
+            data.map(auth => (
+              <tr key={auth.id}>
+                <td>{auth.userName}</td>
+                <td>{getTipoPerfilLabel(auth.role)}</td>
+                <td>{auth.dataInclusao && formatarData(auth.dataInclusao)}</td>
+                <td>{getTipoUserAtivoLabel(auth.ativo)}</td>
+                <td>{auth.empresaId}</td>
+                <td>{getTipoEmpresaAtivoLabel(auth.empresaAtiva)}</td>
+                <td className={stylesDataTable.action}>
+                  <Button variant="primary" size="small" onClick={() => onEdit(auth)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  {user.role === 'Suporte' && (
+                    <Button variant="danger" size="small" onClick={() => onDelete(auth.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
+                  )}
+                </td>
+              </tr>
+            ))
           )}
-          {data.map(auth => (
-            <tr key={auth.id}>
-              {/* <td>{auth.id}</td> */}
-              <td>{auth.userName}</td>
-              <td>{getTipoPerfilLabel(auth.role)}</td>
-              <td>{auth.dataInclusao && formatarData(auth.dataInclusao)}</td>
-              <td>{auth.dataAlteracao && formatarData(auth.dataAlteracao)}</td>
-              <td>{getTipoUserAtivoLabel(auth.ativo)}</td>
-              <td>{auth.empresaId}</td>
-              <td>{getTipoEmpresaAtivoLabel(auth.empresaAtiva)}</td>
-              <td className={stylesDataTable.action}>
-                {(user.role === 'Suporte' || user.role === 'Sindico') && (
-                  <Button
-                    variant="primary"
-                    size="small"
-                    onClick={() => onEdit(auth)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Editar
-                  </Button>
-                )}
-                {user.role === 'Suporte' && (
-                  <Button
-                    variant="danger"
-                    size="small"
-                    onClick={() => onDelete(auth.id)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Excluir
-                  </Button>
-                )}
-              </td>
-            </tr>
-          ))}
         </tbody>
       </table>
+
+      <div className={stylesDataTable.paginationControls} style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+        <Button 
+          disabled={!pagination.hasPrevious} 
+          onClick={() => onPageChange(pagination.currentPage - 1)}
+        >
+          Anterior
+        </Button>
+        
+        <span>Página {pagination.currentPage} de {pagination.totalPages}</span>
+        
+        <Button 
+          disabled={!pagination.hasNext} 
+          onClick={() => onPageChange(pagination.currentPage + 1)}
+        >
+          Próximo
+        </Button>
+      </div>
     </div>
   );
 }

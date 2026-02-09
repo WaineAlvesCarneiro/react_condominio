@@ -23,6 +23,26 @@ function Empresas() {
   const [editingEmpresa, setEditingEmpresa] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Empresas';
+  const [filters, setFilters] = useState({
+    page: 1,
+    pageSize: 10,
+    sortBy: 'UserName',
+    direction: 'ASC',
+    empresaId: user.empresaId
+  });
+
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleSort = (column) => {
+    setFilters(prev => ({
+        ...prev,
+        sortBy: column,
+        direction: prev.sortBy === column && prev.direction === 'ASC' ? 'DESC' : 'ASC',
+        page: 1
+    }));
+  };
 
   const fetchEmpresas = useCallback(async () => {
     if (!user || !user.token) {
@@ -33,7 +53,14 @@ function Empresas() {
 
     try {
       setLoading(true);
-      const data = await empresaService.getAllPaged(user.token);
+      const data = await empresaService.getAllPaged(
+        user.token,
+        filters.page,
+        filters.pageSize,
+        filters.sortBy,
+        filters.direction,
+        filters.empresaId
+      );
       setEmpresas(data);
       setError(null);
     } catch (err) {
@@ -42,7 +69,7 @@ function Empresas() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, filters]);
 
   useEffect(() => {
     fetchEmpresas();
@@ -123,46 +150,49 @@ function Empresas() {
     );
   }
 
-    return (
-      <div className={stylesPageLayout.container}>
-        <h3>{titulo}</h3>
+  return (
+    <div className={stylesPageLayout.container}>
+      <h3>{titulo}</h3>
 
-        {!showForm && (
-          <Button
-            onClick={() => setShowForm(true)}
-            variant="primary"
-            size="medium"
-          >
-            Adicionar Novo Empresa
-          </Button>
-        )}
+      {!showForm && (
+        <Button
+          onClick={() => setShowForm(true)}
+          variant="primary"
+          size="medium"
+        >
+          Adicionar Novo Empresa
+        </Button>
+      )}
 
-        {showForm ? (
-          <EmpresaForm
-            onSave={handleSave}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingEmpresa(null);
-            }}
-            empresaData={editingEmpresa}
-          />
-        ) : (
-          <EmpresasTable
-            empresas={empresas}
-            onEdit={handleEdit}
-            onDelete={confirmDelete}
-          />
-        )}
-
-        <ConfirmModal
-          show={showModal}
-          onConfirm={handleDelete}
-          onCancel={handleCancel}
-          title="Confirmação de Exclusão"
-          message="Tem certeza que deseja excluir esta empresa?"
+      {showForm ? (
+        <EmpresaForm
+          onSave={handleSave}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingEmpresa(null);
+          }}
+          empresaData={editingEmpresa}
         />
-      </div>
-    );
+      ) : (
+        <EmpresasTable
+          empresas={empresas}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
+          onPageChange={handlePageChange}
+          onSort={handleSort}
+          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+        />
+      )}
+
+      <ConfirmModal
+        show={showModal}
+        onConfirm={handleDelete}
+        onCancel={handleCancel}
+        title="Confirmação de Exclusão"
+        message="Tem certeza que deseja excluir esta empresa?"
+      />
+    </div>
+  );
 }
 
 export default Empresas;

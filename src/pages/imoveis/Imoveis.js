@@ -22,6 +22,26 @@ function Imoveis() {
   const [editingImovel, setEditingImovel] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Imóveis';
+  const [filters, setFilters] = useState({
+    page: 1,
+    pageSize: 10,
+    sortBy: 'UserName',
+    direction: 'ASC',
+    empresaId: user.empresaId
+  });
+
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleSort = (column) => {
+    setFilters(prev => ({
+        ...prev,
+        sortBy: column,
+        direction: prev.sortBy === column && prev.direction === 'ASC' ? 'DESC' : 'ASC',
+        page: 1
+    }));
+  };
 
   const fetchImoveis = useCallback(async () => {
     if (!user || !user.token) {
@@ -32,14 +52,13 @@ function Imoveis() {
 
     try {
       setLoading(true);
-      const empresaIdFiltro = user.empresaId;
       const data = await imovelService.getAllPaged(
         user.token,
-        1,
-        10,
-        'Id', 
-        'ASC', 
-        empresaIdFiltro
+        filters.page,
+        filters.pageSize,
+        filters.sortBy,
+        filters.direction,
+        filters.empresaId
       );
       setImoveis(data);
       setError(null);
@@ -49,7 +68,7 @@ function Imoveis() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, filters]);
 
   useEffect(() => {
     fetchImoveis();
@@ -122,46 +141,49 @@ function Imoveis() {
     );
   }
 
-    return (
-      <div className={stylesPageLayout.container}>
-        <h3>{titulo}</h3>
+  return (
+    <div className={stylesPageLayout.container}>
+      <h3>{titulo}</h3>
 
-        {!showForm && user.role === 'Sindico' && (
-          <Button
-            onClick={() => setShowForm(true)}
-            variant="primary"
-            size="medium"
-          >
-            Adicionar Novo Imóvel
-          </Button>
-        )}
+      {!showForm && user.role === 'Sindico' && (
+        <Button
+          onClick={() => setShowForm(true)}
+          variant="primary"
+          size="medium"
+        >
+          Adicionar Novo Imóvel
+        </Button>
+      )}
 
-        {showForm ? (
-          <ImovelForm
-            onSave={handleSave}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingImovel(null);
-            }}
-            imovelData={editingImovel}
-          />
-        ) : (
-          <ImoveisTable
-            imoveis={imoveis}
-            onEdit={handleEdit}
-            onDelete={confirmDelete}
-          />
-        )}
-
-        <ConfirmModal
-          show={showModal}
-          onConfirm={handleDelete}
-          onCancel={handleCancel}
-          title="Confirmação de Exclusão"
-          message="Tem certeza que deseja excluir este imóvel?"
+      {showForm ? (
+        <ImovelForm
+          onSave={handleSave}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingImovel(null);
+          }}
+          imovelData={editingImovel}
         />
-      </div>
-    );
+      ) : (
+        <ImoveisTable
+          imoveis={imoveis}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
+          onPageChange={handlePageChange}
+        onSort={handleSort}
+        currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+        />
+      )}
+
+      <ConfirmModal
+        show={showModal}
+        onConfirm={handleDelete}
+        onCancel={handleCancel}
+        title="Confirmação de Exclusão"
+        message="Tem certeza que deseja excluir este imóvel?"
+      />
+    </div>
+  );
 }
 
 export default Imoveis;

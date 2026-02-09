@@ -8,12 +8,21 @@ import stylesPageLayout from '../../components/layout/PageLayout.module.css';
 
 // import styles from './ImoveisTable.module.css';
 
-function ImoveisTable({ imoveis, onEdit, onDelete }) {
+function ImoveisTable({ imoveis, onEdit, onDelete, onPageChange, onSort, currentSort }) {
   const { user } = useAuth();
 
-  const data = Array.isArray(imoveis) 
-    ? imoveis 
-    : (imoveis && imoveis.items ? imoveis.items : []);
+  const data = imoveis?.items || [];
+  const pagination = {
+    currentPage: imoveis?.currentPage || 1,
+    totalPages: imoveis?.totalPages || 1,
+    hasPrevious: imoveis?.hasPreviousPage,
+    hasNext: imoveis?.hasNextPage
+  };
+
+  const getSortIcon = (column) => {
+    if (currentSort?.sortBy !== column) return '↕';
+    return currentSort.direction === 'ASC' ? '▲' : '▼';
+  };
 
   return (
     <div className={stylesPageLayout.tableContainer}>
@@ -21,8 +30,12 @@ function ImoveisTable({ imoveis, onEdit, onDelete }) {
         <thead>
           <tr>
             <th>Código</th>
-            <th>Bloco</th>
-            <th>Apartamento</th>
+            <th onClick={() => onSort('Bloco')} style={{cursor: 'pointer'}}>
+              Bloco {getSortIcon('Bloco')}
+            </th>
+            <th onClick={() => onSort('Apartamento')} style={{cursor: 'pointer'}}>
+              Apartamento {getSortIcon('Apartamento')}
+            </th>
             <th>Box Garagem</th>
             {user.role === 'Sindico' && (
               <th className={stylesDataTable.action}>Ações</th>
@@ -43,28 +56,34 @@ function ImoveisTable({ imoveis, onEdit, onDelete }) {
               <td>{imovel.boxGaragem}</td>
               {user.role === 'Sindico' && (
                 <td className={stylesDataTable.action}>
-                  <Button
-                    variant="primary"
-                    size="small"
-                    onClick={() => onEdit(imovel)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="small"
-                    onClick={() => onDelete(imovel.id)}
-                    customClass={stylesDataTable.actionButton}
-                  >
-                    Excluir
-                  </Button>
+                  <Button variant="primary" size="small" onClick={() => onEdit(imovel)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  {user.role === 'Suporte' && (
+                    <Button variant="danger" size="small" onClick={() => onDelete(imovel.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
+                  )}
                 </td>
               )}
             </tr>
           ))}
         </tbody>
       </table>
+
+      <div className={stylesDataTable.paginationControls} style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+        <Button 
+          disabled={!pagination.hasPrevious} 
+          onClick={() => onPageChange(pagination.currentPage - 1)}
+        >
+          Anterior
+        </Button>
+        
+        <span>Página {pagination.currentPage} de {pagination.totalPages}</span>
+        
+        <Button 
+          disabled={!pagination.hasNext} 
+          onClick={() => onPageChange(pagination.currentPage + 1)}
+        >
+          Próximo
+        </Button>
+      </div>
     </div>
   );
 }

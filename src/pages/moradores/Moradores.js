@@ -23,7 +23,27 @@ function Moradores() {
   const [editingMorador, setEditingMorador] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Moradores';
-  
+  const [filters, setFilters] = useState({
+    page: 1,
+    pageSize: 10,
+    sortBy: 'UserName',
+    direction: 'ASC',
+    empresaId: user.empresaId
+  });
+
+  const handlePageChange = (newPage) => {
+    setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleSort = (column) => {
+    setFilters(prev => ({
+        ...prev,
+        sortBy: column,
+        direction: prev.sortBy === column && prev.direction === 'ASC' ? 'DESC' : 'ASC',
+        page: 1
+    }));
+  };
+
   const fetchMoradores = useCallback(async () => {
     if (!user || !user.token) {
       notificationService.error('Acesso não autorizado. Por favor, faça login.');
@@ -33,14 +53,13 @@ function Moradores() {
 
     try {
       setLoading(true);
-      const empresaIdFiltro = user.empresaId;
       const data = await moradorService.getAllPaged(
         user.token,
-        1,
-        10,
-        'Id', 
-        'ASC', 
-        empresaIdFiltro
+        filters.page,
+        filters.pageSize,
+        filters.sortBy,
+        filters.direction,
+        filters.empresaId
       );
       setMoradores(data);
       setError(null);
@@ -50,7 +69,7 @@ function Moradores() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, filters]);
 
   useEffect(() => {
     fetchMoradores();
@@ -196,6 +215,9 @@ function Moradores() {
           moradores={moradores}
           onEdit={handleEdit}
           onDelete={confirmDelete}
+          onPageChange={handlePageChange}
+          onSort={handleSort}
+          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
         />
       )}
 
