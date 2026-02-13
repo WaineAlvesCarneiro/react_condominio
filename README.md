@@ -51,6 +51,23 @@ Comunica com API disponível no GitHub:
 
 RESTful API em C# - ASP Net Core versão 8 - https://github.com/WaineAlvesCarneiro/AspNetCore_Condominio
 
+
+RabbitMQ
+
+Worker
+
+Docker para containerização da aplicação e do RabbitMQ
+
+Mensageria:
+RabbitMQ para comunicação assíncrona entre serviços e processamento de tarefas em segundo plano.
+Sendo executado no Docker, o RabbitMQ é utilizado para enviar mensagens de eventos como cadastro de empresa, usuário e morador, que são processados um por um.
+Worker Service para processar mensagens do RabbitMQ e executar tarefas em segundo plano como envio de notificações por e-mail, ao cadastrar empresa, usuário e morador.
+
+Ao cadastrar uma empresa são informados os dados de SMTP para envio de e-mail, e o Worker Service utiliza essas informações para enviar um e-mail de boas vindas
+	com as informações do cadastro para o usuário cadastrado.
+		O mesmo acontece ao cadastrar um usuário ou morador, o sistema envia um e-mail de boas vindas com as informações do cadastro.
+
+
 Banco de Dados:
 
 SQL Server
