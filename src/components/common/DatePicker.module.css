@@ -1,0 +1,9 @@
+/* src\components\common\DatePicker.module.css */
+
+.react-datepicker__input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
