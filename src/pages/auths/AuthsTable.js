@@ -64,7 +64,9 @@ function AuthsTable({ auths, onEdit, onDelete, onPageChange, onSort, currentSort
                 <td>{auth.empresaId}</td>
                 <td>{getTipoEmpresaAtivoLabel(auth.empresaAtiva)}</td>
                 <td className={stylesDataTable.action}>
-                  <Button variant="primary" size="small" onClick={() => onEdit(auth)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  {(user.role === 'Suporte' || user.role === 'Sindico') && (
+                    <Button variant="primary" size="small" onClick={() => onEdit(auth)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  )}
                   {user.role === 'Suporte' && (
                     <Button variant="danger" size="small" onClick={() => onDelete(auth.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
                   )}

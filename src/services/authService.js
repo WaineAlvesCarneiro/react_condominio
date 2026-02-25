@@ -2,54 +2,32 @@
 
 import api from '../api/api';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = process.env.REACT_APP_API_URL + '/auth';
 
 export const authService = {
   login: async (username, password) => {
     try {
-      const response = await api.post('/auth/login', {
-        username: username,
-        password: password
-      });
-
+      const response = await api.post(`${API_URL}/login`, { username, password });
       return response.data;
-
     } catch (error) {
       if (error.response) {
-        if (error.response.status === 401) {
-          throw new Error('Usuário ou senha inválidos.');
-        } else {
-          throw new Error(error.response.data.erro);
-        }
-      } else if (error.request) {
-        throw new Error('Sem resposta do servidor. Verifique sua conexão.');
-      } else {
-        throw new Error('Falha na comunicação. Tente novamente mais tarde.');
+        if (error.response.status === 401) throw new Error('Usuário ou senha inválidos.');
+        throw new Error(error.response.data?.erro || 'Erro no servidor.');
       }
+      throw new Error(error.request ? 'Sem resposta do servidor.' : 'Falha na comunicação.');
     }
   },
 
   definirSenhaPermanente: async (novaSenha) => {
-    const response = await api.post('/auth/definir-senha-permanente', { novaSenha });
+    const response = await api.post(`${API_URL}/definir-senha-permanente`, { novaSenha });
     return response.data;
   },
 
   getAll: async (token, empresaId = null) => {
-    if (!token) {
-      throw new Error("Token de autenticação não fornecido.");
-    }
+    if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const queryParams = new URLSearchParams({
-      empresaId
-    });
-
-    if (empresaId) {
-        queryParams.append('empresaId', empresaId.toString());
-    }
-
-    const url = `${API_URL}/auth?${queryParams.toString()}`;
-
-    const response = await fetch(url, {
+    const params = empresaId ? new URLSearchParams({ empresaId }) : '';
+    const response = await fetch(`${API_URL}?${params}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -57,42 +35,25 @@ export const authService = {
       }
     });
 
-    if (response.status === 401) {
-      throw new Error("Token de autenticação expirado.");
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao buscar usuários.' }));
-      throw new Error(errorData.erro);
-    }
-
+    if (response.status === 401) throw new Error("Token de autenticação expirado.");
+    
     const result = await response.json();
-
-    if (result.sucesso) {
-      return result.dados;
-    } else {
-      throw new Error(result.erro || 'Erro desconhecido na API.');
-    }
+    if (!response.ok) throw new Error(result.erro || 'Falha ao buscar usuários.');    
+    return result.sucesso ? result.dados : result;
   },
 
   getAllPaged: async (token, page = 1, pageSize = 10, sortBy = 'Id', sortDescending = 'ASC', empresaId = null) => {
     if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const params = {
-      page: page.toString(),
-      pageSize: pageSize.toString(),
-      sortBy: sortBy,
-      sortDescending: sortDescending,
-    };
+    const queryParams = new URLSearchParams({
+      page,
+      pageSize,
+      sortBy,
+      sortDescending,
+      ...(empresaId && { empresaId })
+    });
 
-    if (empresaId !== null && empresaId !== undefined) {
-      params.empresaId = empresaId.toString();
-    }
-
-    const queryParams = new URLSearchParams(params);
-    const url = `${API_URL}/auth/paginado?${queryParams.toString()}`;
-
-    const response = await fetch(url, {
+    const response = await fetch(`${API_URL}/paginado?${queryParams}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -104,12 +65,28 @@ export const authService = {
     return result.sucesso ? result.dados : Promise.reject(result.erro);
   },
 
-  create: async (authData, token) => {
-    if (!token) {
-      throw new Error("Token de autenticação não fornecido.");
-    }
+  getById: async (id, token) => {
+    if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const response = await fetch(`${API_URL}/auth/criar-usuario`, {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (response.status === 401) throw new Error("Token de autenticação expirado.");
+    if (response.status === 404) return null;
+
+    const result = await response.json();
+    return result.sucesso ? result.dados : Promise.reject(result.erro);
+  },
+
+  create: async (authData, token) => {
+    if (!token) throw new Error("Token de autenticação não fornecido.");
+
+    const response = await fetch(`${API_URL}/criar-usuario`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -118,25 +95,18 @@ export const authService = {
       body: JSON.stringify(authData)
     });
 
-    if (response.status === 401) {
-      throw new Error("Token de autenticação expirado.");
-    }
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao criar o usuário.' }));
-      throw new Error(errorData.erro || 'Falha ao criar o usuário.');
-    }
-
+    if (response.status === 401) throw new Error("Token de autenticação expirado.");
+    
     const result = await response.json();
+    if (!response.ok) throw new Error(result.erro || 'Falha ao criar o usuário.');
+    
     return result.dados;
   },
 
   update: async (authData, token) => {
-    if (!token) {
-      throw new Error("Token de autenticação não fornecido.");
-    }
+    if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const response = await fetch(`${API_URL}/auth/${authData.id}`, {
+    const response = await fetch(`${API_URL}/${authData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -145,35 +115,29 @@ export const authService = {
       body: JSON.stringify(authData)
     });
 
-    if (response.status === 401) {
-      throw new Error("Token de autenticação expirado.");
-    }
-
+    if (response.status === 401) throw new Error("Token de autenticação expirado.");
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao atualizar o usuário.' }));
-      throw new Error(errorData.erro || 'Falha ao atualizar o usuário.');
+      const result = await response.json();
+      throw new Error(result.erro || 'Falha ao atualizar o usuário.');
     }
   },
 
   delete: async (id, token) => {
-    if (!token) {
-      throw new Error("Token de autenticação não fornecido.");
-    }
+    if (!token) throw new Error("Token de autenticação não fornecido.");
 
-    const response = await fetch(`${API_URL}/auth/${id}`, {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
-    if (response.status === 401) {
-      throw new Error("Token de autenticação expirado.");
-    }
+    if (response.status === 401) throw new Error("Token de autenticação expirado.");
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ erro: 'Falha ao deletar o usuário.' }));
-      throw new Error(errorData.erro || 'Falha ao deletar o usuário.');
+      const result = await response.json();
+      throw new Error(result.erro || 'Falha ao deletar o usuário.');
     }
   }
 };

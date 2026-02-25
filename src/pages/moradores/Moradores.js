@@ -146,26 +146,37 @@ function Moradores() {
     }
   };
 
-  const handleEdit = (morador) => {
-    const moradorComDatas = {
-      ...morador,
-      dataEntrada: parseIsoDateLocal(morador.dataEntrada),
-      dataSaida: morador.dataSaida ? parseIsoDateLocal(morador.dataSaida) : null,
-      dataInclusao: parseIsoDateLocal(morador.dataInclusao)
-    };
-    setEditingMorador(moradorComDatas);
-    setShowForm(true);
+  const handleEdit = async (morador) => {
+    try {
+      setLoading(true);
+      const moradorAtualizado = await moradorService.getById(morador.id, user.token);
+      if (!moradorAtualizado) {
+        notificationService.error('Este morador não foi encontrado ou já foi removido.');
+        await fetchMoradores();
+        return;
+      }
+      setEditingMorador(moradorAtualizado);
+      setShowForm(true);
+    } catch (err) {
+          notificationService.error('Erro ao buscar dados atualizados do morador.');
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
   };
 
   const handleDelete = async () => {
     try {
       await moradorService.delete(itemToDelete, user.token);
+      notificationService.success('Morador excluído com sucesso!');
       setShowModal(false);
       setItemToDelete(null);
-      notificationService.success('Morador excluído com sucesso!');
       await fetchMoradores();
     } catch (err) {
-      notificationService.error(`${err.message}`);
+      notificationService.error(`Não foi possível excluir: ${err.message}`);
+      setShowModal(false);
+      setItemToDelete(null);
+      await fetchMoradores();
     }
   };
 

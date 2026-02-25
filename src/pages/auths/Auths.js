@@ -108,24 +108,37 @@ function Auths() {
     }
   };
 
-  const handleEdit = (auth) => {
-    const authComDatas = {
-      ...auth,
-      dataInclusao: parseIsoDateLocal(auth.dataInclusao)
-    };
-    setEditingAuth(authComDatas);
-    setShowForm(true);
+  const handleEdit = async (auth) => {
+    try {
+      setLoading(true);
+      const authAtualizado = await authService.getById(auth.id, user.token);
+      if (!authAtualizado) {
+        notificationService.error('Este usuário não foi encontrado ou já foi removido.');
+        await fetchAuths();
+        return;
+      }
+      setEditingAuth(authAtualizado);
+      setShowForm(true);
+    } catch (err) {
+      notificationService.error('Erro ao buscar dados atualizados do usuário.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     try {
       await authService.delete(itemToDelete, user.token);
+      notificationService.success('Usuário excluído com sucesso!');
       setShowModal(false);
       setItemToDelete(null);
-      notificationService.success('Usuário excluído com sucesso!');
       await fetchAuths();
     } catch (err) {
-      notificationService.error(`${err.message}`);
+      notificationService.error(`Não foi possível excluir: ${err.message}`);
+      setShowModal(false);
+      setItemToDelete(null);
+      await fetchAuths();
     }
   };
 

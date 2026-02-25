@@ -111,24 +111,37 @@ function Empresas() {
     }
   };
 
-  const handleEdit = (empresa) => {
-    const empresaComDatas = {
-      ...empresa,
-      dataInclusao: parseIsoDateLocal(empresa.dataInclusao)
-    };
-    setEditingEmpresa(empresaComDatas);
-    setShowForm(true);
+  const handleEdit = async (empresa) => {
+    try {
+      setLoading(true);    
+      const empresaAtualizada = await empresaService.getById(empresa.id, user.token);
+      if (!empresaAtualizada) {
+        notificationService.error('Esta empresa não foi encontrada ou já foi removida.');
+        await fetchEmpresas();
+        return;
+      }
+      setEditingEmpresa(empresaAtualizada);
+      setShowForm(true);
+    } catch (err) {
+      notificationService.error('Erro ao buscar dados atualizados do empresa.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     try {
       await empresaService.delete(itemToDelete, user.token);
+      notificationService.success('Empresa excluído com sucesso!');
       setShowModal(false);
       setItemToDelete(null);
-      notificationService.success('Empresa excluído com sucesso!');
       await fetchEmpresas();
     } catch (err) {
-      notificationService.error(`${err.message}`);
+      notificationService.error(`Não foi possível excluir: ${err.message}`);
+      setShowModal(false);
+      setItemToDelete(null);
+      await fetchEmpresas();
     }
   };
 

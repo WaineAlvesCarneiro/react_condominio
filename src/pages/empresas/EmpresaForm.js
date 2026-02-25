@@ -8,7 +8,8 @@ import Select from '../../components/common/Select';
 import stylesForm from '../../components/common/Form.module.css';
 import stylesInput from '../../components/common/Input.module.css';
 import { buscarCep } from '../../services/cepService';
-import { useEnum } from '../../hooks/useEnum'
+import { useEnum } from '../../hooks/useEnum';
+import { notificationService } from '../../services/notificationService';
 
 // import styles from './EmpresaForm.module.css';
 
@@ -46,7 +47,6 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
     const validarCNPJ = (cnpj) => {
         cnpj = cnpj.replace(/[^\d]+/g, '');
         if (cnpj.length !== 14) return false;
-        // ... lógica de validação (opcional repetir no front ou apenas esperar o back)
         return true;
     };
 
@@ -84,6 +84,11 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        if ((!empresa.id || empresa.id === 0) && !empresa.senha) {
+            notificationService.error("A senha é obrigatória para novas empresas.");
+            setLoading(false);
+            return;
+        }
         await onSave(empresa);
         setLoading(false);
     };
@@ -241,7 +246,8 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         minLength={3}
                         maxLength={100}
                         autoComplete="off"
-                        required
+                        required={!empresa.id || empresa.id === 0}
+                        placeholder={empresa.id > 0 ? "Deixe em branco para manter a atual" : "Digite a senha"}
                     />
                 </div>
 

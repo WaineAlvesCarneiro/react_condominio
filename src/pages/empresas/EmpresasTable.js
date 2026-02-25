@@ -6,12 +6,14 @@ import stylesDataTable from '../../components/common/DataTable.module.css';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
 import { formatarCnpj, formatarCelular } from '../../utils/formatters';
 import { useEnum } from '../../hooks/useEnum';
+import { useAuth } from '../../hooks/useAuth';
 
 // import styles from './EmpresasTable.module.css';
 
 function EmpresasTable({ empresas, onEdit, onDelete, onPageChange, onSort, currentSort }) {
   const { options: tipoCondominioOptions } = useEnum('tipo-condominio');
   const { options: tipoEmpresaAtivoOptions } = useEnum('tipo-empresa-ativo');
+  const { user } = useAuth();
 
   const data = empresas?.items || [];
   const pagination = {
@@ -44,7 +46,9 @@ function EmpresasTable({ empresas, onEdit, onDelete, onPageChange, onSort, curre
             <th>Tipo De Condomínio</th>
             <th>Nome</th>
             <th>Celular</th>
-            <th className={stylesDataTable.action}>Ações</th>
+            {user.role === 'Suporte' && (
+              <th className={stylesDataTable.action}>Ações</th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -63,10 +67,12 @@ function EmpresasTable({ empresas, onEdit, onDelete, onPageChange, onSort, curre
               <td>{getTipoCondominioLabel(empresa.tipoDeCondominio)}</td>
               <th>{empresa.nome}</th>
               <th>{formatarCelular(empresa.celular)}</th>
-              <td className={stylesDataTable.action}>
-                <Button variant="primary" size="small" onClick={() => onEdit(empresa)} customClass={stylesDataTable.actionButton}>Editar</Button>
-                <Button variant="danger" size="small" onClick={() => onDelete(empresa.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
-              </td>
+              {user.role === 'Suporte' && (
+                <td className={stylesDataTable.action}>
+                  <Button variant="primary" size="small" onClick={() => onEdit(empresa)} customClass={stylesDataTable.actionButton}>Editar</Button>
+                  <Button variant="danger" size="small" onClick={() => onDelete(empresa.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

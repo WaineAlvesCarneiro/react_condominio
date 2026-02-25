@@ -57,9 +57,7 @@ function ImoveisTable({ imoveis, onEdit, onDelete, onPageChange, onSort, current
               {user.role === 'Sindico' && (
                 <td className={stylesDataTable.action}>
                   <Button variant="primary" size="small" onClick={() => onEdit(imovel)} customClass={stylesDataTable.actionButton}>Editar</Button>
-                  {user.role === 'Suporte' && (
-                    <Button variant="danger" size="small" onClick={() => onDelete(imovel.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
-                  )}
+                  <Button variant="danger" size="small" onClick={() => onDelete(imovel.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
                 </td>
               )}
             </tr>

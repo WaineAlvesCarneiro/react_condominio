@@ -106,20 +106,37 @@ function Imoveis() {
     }
   };
 
-  const handleEdit = (imovel) => {
-    setEditingImovel(imovel);
-    setShowForm(true);
+  const handleEdit = async (imovel) => {
+    try {
+      setLoading(true);
+      const imovelAtualizado = await imovelService.getById(imovel.id, user.token);
+      if (!imovelAtualizado) {
+        notificationService.error('Este imóvel não foi encontrado ou já foi removido.');
+        await fetchImoveis();
+        return;
+      }
+      setEditingImovel(imovelAtualizado);
+      setShowForm(true);
+    } catch (err) {
+      notificationService.error('Erro ao buscar dados atualizados do imóvel.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
     try {
       await imovelService.delete(itemToDelete, user.token);
+      notificationService.success('Imóvel excluído com sucesso!');
       setShowModal(false);
       setItemToDelete(null);
-      notificationService.success('Imóvel excluído com sucesso!');
       await fetchImoveis();
     } catch (err) {
-      notificationService.error(`${err.message}`);
+      notificationService.error(`Não foi possível excluir: ${err.message}`);
+      setShowModal(false);
+      setItemToDelete(null);
+      await fetchImoveis();
     }
   };
 

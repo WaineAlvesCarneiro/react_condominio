@@ -68,9 +68,7 @@ function MoradoresTable({ moradores, onEdit, onDelete, onPageChange, onSort, cur
               {user.role === 'Sindico' && (
                 <td className={stylesDataTable.action}>
                   <Button variant="primary" size="small" onClick={() => onEdit(morador)} customClass={stylesDataTable.actionButton}>Editar</Button>
-                  {user.role === 'Suporte' && (
-                    <Button variant="danger" size="small" onClick={() => onDelete(morador.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
-                  )}
+                  <Button variant="danger" size="small" onClick={() => onDelete(morador.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
                 </td>
               )}
             </tr>
