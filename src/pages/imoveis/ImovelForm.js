@@ -1,14 +1,15 @@
 // src\pages\imoveis\ImovelForm.js
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import stylesForm from '../../components/common/Form.module.css';
-
 // import styles from './ImovelForm.module.css';
 
 function ImovelForm({ onSave, onCancel, imovelData }) {
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
     const [imovel, setImovel] = useState(imovelData || {
         id: 0,
         bloco: '',
@@ -19,9 +20,7 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
     const blocoRef = useRef(null);
 
     useEffect(() => {
-        if (blocoRef.current) {
-            blocoRef.current.focus();
-        }
+        if (blocoRef.current) blocoRef.current.focus();
     }, [imovelData]);
 
     const handleChange = (e) => {
@@ -69,6 +68,7 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         maxLength={100}
                         autoComplete="off"
                         required
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
@@ -82,6 +82,7 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         maxLength={100}
                         autoComplete="off"
                         required
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
@@ -95,26 +96,29 @@ function ImovelForm({ onSave, onCancel, imovelData }) {
                         maxLength={100}
                         autoComplete="off"
                         required
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
 
                 <div className={stylesForm.formActions}>
-                    <Button
-                        type="submit"
-                        loading={loading}
-                        loadingText="Salvando..."
-                        variant="primary"
-                        size="medium"
-                    >
-                        Salvar
-                    </Button>
+                    {user.role === 'Sindico' && (
+                        <Button
+                            type="submit"
+                            loading={loading}
+                            loadingText="Salvando..."
+                            variant="primary"
+                            size="medium"
+                        >
+                            Salvar
+                        </Button>
+                    )}
                     <Button
                         type="button"
                         onClick={onCancel}
                         variant="secondary"
                         size="medium"
                     >
-                        Cancelar
+                        {user.role === 'Sindico' ? 'Cancelar' : 'Fechar'}
                     </Button>
                 </div>
             </form>

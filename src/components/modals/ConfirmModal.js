@@ -5,9 +5,7 @@ import Button from '../common/Button';
 import styles from './ConfirmModal.module.css';
 
 const ConfirmModal = ({ show, onConfirm, onCancel, title, message }) => {
-    if (!show) {
-        return null;
-    }
+    if (!show) return null;
 
     return (
         <div className={styles.overlay}>

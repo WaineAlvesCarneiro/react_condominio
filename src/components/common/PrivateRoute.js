@@ -12,18 +12,14 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (user.primeiroAcesso && location.pathname !== '/definir-senha-permanente') {
-    return <Navigate to="/definir-senha-permanente" replace />;
-  }
+  if (user.primeiroAcesso && location.pathname !== '/definir-senha-permanente')  return <Navigate to="/definir-senha-permanente" replace />;
 
   allowedRoles.includes(user.role);
   if (allowedRoles) return <Outlet />;
 
   const hasRole = allowedRoles.some(role => role === user.role);
 
-  if (!hasRole) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  if (!hasRole) return <Navigate to="/unauthorized" replace />;
 };
 
 export default PrivateRoute;

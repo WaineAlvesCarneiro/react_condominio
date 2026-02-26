@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import './DatePicker.module.css';
 import styles from './Input.module.css';
 
-const DatePicker = ({ id, name, value, onChange, placeholder, required }) => {
+const DatePicker = ({ id, name, value, onChange, placeholder, required, disabled }) => {
     return (
         <ReactDatePicker
             id={id}
@@ -20,6 +20,7 @@ const DatePicker = ({ id, name, value, onChange, placeholder, required }) => {
             placeholderText={placeholder}
             className={styles.input}
             required={required}
+            disabled={disabled}
         />
     );
 };

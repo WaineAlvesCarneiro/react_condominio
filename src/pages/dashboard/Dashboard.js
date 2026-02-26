@@ -35,14 +35,8 @@ function Dashboard() {
       const { role, token, empresaId } = user;
       const requests = [];
 
-      if (role !== 'Porteiro') {
-        requests.push(authService.getAll(token, empresaId).then(res => ({ usuarios: res })));
-      }
-      
-      if (role === 'Suporte') {
-        requests.push(empresaService.getAll(token, empresaId).then(res => ({ empresas: res })));
-      }
-
+      if (role !== 'Porteiro') requests.push(authService.getAll(token, empresaId).then(res => ({ usuarios: res })));      
+      if (role === 'Suporte') requests.push(empresaService.getAll(token, empresaId).then(res => ({ empresas: res })));
       if (role === 'Sindico' || role === 'Porteiro') {
         requests.push(imovelService.getAll(token, empresaId).then(res => ({ imoveis: res })));
         requests.push(moradorService.getAll(token, empresaId).then(res => ({ moradores: res })));

@@ -39,9 +39,7 @@ function MoradoresTable({ moradores, onEdit, onDelete, onPageChange, onSort, cur
             <th>Data saída</th>
             <th>Imóvel 'Bloco-Apto'</th>
             <th>Proprietário</th>
-            {user.role === 'Sindico' && (
-              <th className={stylesDataTable.action}>Ações</th>
-            )}
+            <th className={stylesDataTable.action}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -65,12 +63,14 @@ function MoradoresTable({ moradores, onEdit, onDelete, onPageChange, onSort, cur
               <td className={`${styles.status} ${morador.isProprietario ? styles.sim : styles.nao}`}>
                 {morador.isProprietario ? 'Sim' : 'Não'}
               </td>
-              {user.role === 'Sindico' && (
-                <td className={stylesDataTable.action}>
-                  <Button variant="primary" size="small" onClick={() => onEdit(morador)} customClass={stylesDataTable.actionButton}>Editar</Button>
+              <td className={stylesDataTable.action}>
+                <Button variant="primary" size="small" onClick={() => onEdit(morador)} customClass={stylesDataTable.actionButton}>
+                  {user.role === 'Sindico' ? 'Editar' : 'Visualizar'}
+                </Button>
+                {user.role === 'Sindico' && (
                   <Button variant="danger" size="small" onClick={() => onDelete(morador.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
-                </td>
-              )}
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

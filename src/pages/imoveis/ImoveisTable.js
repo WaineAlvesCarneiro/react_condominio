@@ -37,9 +37,7 @@ function ImoveisTable({ imoveis, onEdit, onDelete, onPageChange, onSort, current
               Apartamento {getSortIcon('Apartamento')}
             </th>
             <th>Box Garagem</th>
-            {user.role === 'Sindico' && (
-              <th className={stylesDataTable.action}>Ações</th>
-            )}
+            <th className={stylesDataTable.action}>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -54,12 +52,14 @@ function ImoveisTable({ imoveis, onEdit, onDelete, onPageChange, onSort, current
               <td>{imovel.bloco}</td>
               <td>{imovel.apartamento}</td>
               <td>{imovel.boxGaragem}</td>
-              {user.role === 'Sindico' && (
-                <td className={stylesDataTable.action}>
-                  <Button variant="primary" size="small" onClick={() => onEdit(imovel)} customClass={stylesDataTable.actionButton}>Editar</Button>
+              <td className={stylesDataTable.action}>
+                <Button variant="primary" size="small" onClick={() => onEdit(imovel)} customClass={stylesDataTable.actionButton}>
+                  {user.role === 'Sindico' ? 'Editar' : 'Visualizar'}
+                </Button>
+                {user.role === 'Sindico' && (
                   <Button variant="danger" size="small" onClick={() => onDelete(imovel.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
-                </td>
-              )}
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

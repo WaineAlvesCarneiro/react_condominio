@@ -2,23 +2,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { IMaskInput } from 'react-imask';
-
 import { useAuth } from '../../hooks/useAuth';
-
 // import Boolean from '../../components/common/Boolean';
 import Input from '../../components/common/Input';
 import Select from '../../components/common/Select';
 import Switch from '../../components/common/Switch';
 import Button from '../../components/common/Button';
 import DatePicker from '../../components/common/DatePicker';
-
 import { notificationService } from '../../services/notificationService';
-
 import stylesInput from '../../components/common/Input.module.css';
 import stylesForm from '../../components/common/Form.module.css';
-
 import { parseIsoDateLocal, formatarData } from '../../utils/formatters';
-
 import imovelService from '../../services/imovelService';
 // import styles from './MoradorForm.module.css';
 
@@ -40,18 +34,10 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
             imovelId: 0,
             empresaId: 0
         };
-        if (initialData.dataEntrada) {
-            initialData.dataEntrada = parseIsoDateLocal(initialData.dataEntrada);
-        }
-        if (initialData.dataSaida) {
-            initialData.dataSaida = parseIsoDateLocal(initialData.dataSaida);
-        }
-        if (initialData.dataInclusao) {
-            initialData.dataInclusao = parseIsoDateLocal(initialData.dataInclusao);
-        }
-        if (initialData.dataAlteracao) {
-            initialData.dataAlteracao = parseIsoDateLocal(initialData.dataAlteracao);
-        }
+        if (initialData.dataEntrada) initialData.dataEntrada = parseIsoDateLocal(initialData.dataEntrada);
+        if (initialData.dataSaida) initialData.dataSaida = parseIsoDateLocal(initialData.dataSaida);
+        if (initialData.dataInclusao) initialData.dataInclusao = parseIsoDateLocal(initialData.dataInclusao);
+        if (initialData.dataAlteracao) initialData.dataAlteracao = parseIsoDateLocal(initialData.dataAlteracao);
 
         return initialData;
     });
@@ -82,6 +68,8 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
     }, [moradorData]);
 
     const handleChange = (e) => {
+        if (user.role === 'Porteiro' && e.target.name === 'isProprietario') return;
+
         const { name, value, type, checked } = e.target;
         setMorador(prev => ({
             ...prev,
@@ -90,6 +78,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
     };
 
     const handleDateChange = (date, name) => {
+        if (user.role === 'Porteiro') return;
         setMorador(prev => ({ ...prev, [name]: date }));
     };
 
@@ -132,6 +121,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         minLength={3}
                         maxLength={100}
                         autoComplete="off"
+                        disabled={user.role === 'Porteiro'}
                         required
                     />
                 </div>
@@ -148,6 +138,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         unmask={true}
                         placeholder="(00) 00000-0000"
                         className={stylesInput.input}
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
@@ -161,6 +152,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         maxLength={100}
                         autoComplete="off"
                         required
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 <div className={stylesForm.formGroup}>
@@ -172,6 +164,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         onChange={(date) => handleDateChange(date, 'dataEntrada')}
                         required
                         placeholder="dd/mm/aaaa"
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 {morador.id > 0 && (
@@ -183,6 +176,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                             value={morador.dataSaida}
                             onChange={(date) => handleDateChange(date, 'dataSaida')}
                             placeholder="dd/mm/aaaa"
+                            disabled={user.role === 'Porteiro'}
                         />
                     </div>
                 )}
@@ -195,6 +189,7 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                         onChange={handleChange}
                         options={imoveis}
                         required
+                        disabled={user.role === 'Porteiro'}
                     />
                 </div>
                 {/* <Boolean
@@ -208,25 +203,28 @@ function MoradorForm({ onSave, onCancel, moradorData }) {
                     name="isProprietario"
                     checked={morador.isProprietario}
                     onChange={handleChange}
+                    disabled={user.role === 'Porteiro'}
                 />
 
                 <div className={stylesForm.formActions}>
-                    <Button
-                        type="submit"
-                        loading={loading}
-                        loadingText="Salvando..."
-                        variant="primary"
-                        size="medium"
-                    >
-                        Salvar
-                    </Button>
+                    {user.role === 'Sindico' && (
+                        <Button
+                            type="submit"
+                            loading={loading}
+                            loadingText="Salvando..."
+                            variant="primary"
+                            size="medium"
+                        >
+                            Salvar
+                        </Button>
+                    )}
                     <Button
                         type="button"
                         onClick={onCancel}
                         variant="secondary"
                         size="medium"
                     >
-                        Cancelar
+                        {user.role === 'Sindico' ? 'Cancelar' : 'Fechar'}
                     </Button>
                 </div>
             </form>

@@ -16,9 +16,7 @@ function DefinirSenha() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (senhaRef.current) {
-      senhaRef.current.focus();
-    }
+    if (senhaRef.current) senhaRef.current.focus();
   }, []);
 
   const handleSubmit = async (e) => {

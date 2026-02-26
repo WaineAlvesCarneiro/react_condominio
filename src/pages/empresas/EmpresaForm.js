@@ -71,9 +71,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
     const razaoSocialRef = useRef(null);
 
     useEffect(() => {
-        if (razaoSocialRef.current) {
-            razaoSocialRef.current.focus();
-        }
+        if (razaoSocialRef.current) razaoSocialRef.current.focus();
     }, [empresaData]);
 
     const handleChange = (e) => {
@@ -303,7 +301,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         onChange={handleChange}
                         minLength={2}
                         maxLength={2}
-                        // readOnly
+                        readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -317,7 +315,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         onChange={handleChange}
                         minLength={3}
                         maxLength={100}
-                        // readOnly
+                        readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -331,7 +329,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         onChange={handleChange}
                         minLength={3}
                         maxLength={100}
-                        // readOnly
+                        readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>
@@ -345,7 +343,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                         onChange={handleChange}
                         minLength={3}
                         maxLength={100}
-                        // readOnly
+                        readOnly
                         className={stylesInput.disabledInput}
                     />
                 </div>

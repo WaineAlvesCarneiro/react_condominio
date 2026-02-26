@@ -8,10 +8,7 @@ const HomeRedirect = () => {
 
   if (loading) return <div>Carregando...</div>;
   if (!user) return <Navigate to="/login" replace />;
-
-  if (user.role === 'Suporte') {
-    return <Navigate to="/empresas" replace />; 
-  }
+  if (user.role === 'Suporte') return <Navigate to="/empresas" replace />; 
   
   return <Navigate to="/dashboard" replace />;
 };

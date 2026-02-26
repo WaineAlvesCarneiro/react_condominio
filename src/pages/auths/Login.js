@@ -29,11 +29,8 @@ function Login() {
 
     try {
       const session = await login(username, password);      
-      if (session.primeiroAcesso) {
-        navigate('/definir-senha-permanente');
-      } else {
-        navigate('/dashboard');
-      }
+      if (session.primeiroAcesso) navigate('/definir-senha-permanente');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

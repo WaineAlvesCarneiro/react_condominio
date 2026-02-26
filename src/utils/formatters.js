@@ -42,9 +42,7 @@ export const validarDataSaida = (dataEntrada, dataSaida) => {
     const entrada = parseIsoDateLocal(dataEntrada);
     const saida = parseIsoDateLocal(dataSaida);
     
-    if (!entrada || !saida) {
-        return { valido: false, mensagem: 'Datas inválidas!' };
-    }
+    if (!entrada || !saida) return { valido: false, mensagem: 'Datas inválidas!' };
     
     if (saida < entrada) {
         return { 
@@ -59,18 +57,14 @@ export const validarDataSaida = (dataEntrada, dataSaida) => {
 export const formatarCelular = (celular) => {
     if (!celular) return '';
     const apenasDigitos = celular.replace(/\D/g, '');
-    if (apenasDigitos.length === 11) {
-        return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 7)}-${apenasDigitos.substring(7, 11)}`;
-    }
+    if (apenasDigitos.length === 11) return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 7)}-${apenasDigitos.substring(7, 11)}`;
     return celular;
 };
 
 export const formatarTelefone = (telefone) => {
     if (!telefone) return '';
     const apenasDigitos = telefone.replace(/\D/g, '');
-    if (apenasDigitos.length === 10) {
-        return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 6)}-${apenasDigitos.substring(6, 10)}`;
-    }
+    if (apenasDigitos.length === 10) return `(${apenasDigitos.substring(0, 2)}) ${apenasDigitos.substring(2, 6)}-${apenasDigitos.substring(6, 10)}`;
     return telefone;
 };
 
