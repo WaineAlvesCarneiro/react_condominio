@@ -68,7 +68,7 @@ function EmpresasTable({ empresas, onEdit, onDelete, onPageChange, onSort, curre
               <th>{empresa.nome}</th>
               <th>{formatarCelular(empresa.celular)}</th>
               {user.role === 'Suporte' && (
-                <td className={stylesDataTable.action}>
+                <td className={stylesDataTable.actionContainer}>
                   <Button variant="primary" size="small" onClick={() => onEdit(empresa)} customClass={stylesDataTable.actionButton}>Editar</Button>
                   <Button variant="danger" size="small" onClick={() => onDelete(empresa.id)} customClass={stylesDataTable.actionButton}>Excluir</Button>
                 </td>

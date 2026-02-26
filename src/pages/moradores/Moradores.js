@@ -3,9 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
+import TableFilters from '../../components/common/TableFilters';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { notificationService } from '../../services/notificationService'; 
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
+import stylesTableFilters from '../../components/common/TableFilters.module.css';
 
 import moradorService from '../../services/moradorService';
 import MoradorForm from './MoradorForm';
@@ -23,16 +26,34 @@ function Moradores() {
   const [editingMorador, setEditingMorador] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Moradores';
+  const initialFilters = {
+    page: 1,
+    pageSize: 10,
+    sortBy: 'Id',
+    direction: 'ASC',
+    nome: ''
+  };
+
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
-    sortBy: 'UserName',
+    sortBy: 'Id',
     direction: 'ASC',
-    empresaId: user.empresaId
+    empresaId: user.empresaId,
+    nome: ''
   });
 
   const handlePageChange = (newPage) => {
     setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+        ...prev,
+        [name]: value,
+        page: 1 // Resetar para a primeira página ao aplicar um filtro
+    }));
   };
 
   const handleSort = (column) => {
@@ -45,22 +66,11 @@ function Moradores() {
   };
 
   const fetchMoradores = useCallback(async () => {
-    if (!user || !user.token) {
-      notificationService.error('Acesso não autorizado. Por favor, faça login.');
-      setLoading(false);
-      return;
-    }
+    if (!user || !user.token) return;
 
     try {
       setLoading(true);
-      const data = await moradorService.getAllPaged(
-        user.token,
-        filters.page,
-        filters.pageSize,
-        filters.sortBy,
-        filters.direction,
-        filters.empresaId
-      );
+      const data = await moradorService.getAllPaged(user.token, filters);
       setMoradores(data);
       setError(null);
     } catch (err) {
@@ -72,7 +82,11 @@ function Moradores() {
   }, [user, filters]);
 
   useEffect(() => {
-    fetchMoradores();
+    const delayDebounceFn = setTimeout(() => {
+      fetchMoradores();
+    }, 500);// Adiciona um pequeno atraso para evitar chamadas excessivas ao digitar
+
+    return () => clearTimeout(delayDebounceFn);
   }, [fetchMoradores]);
 
   const confirmDelete = (moradorId) => {
@@ -222,14 +236,32 @@ function Moradores() {
           moradorData={editingMorador}
         />
       ) : (
-        <MoradoresTable
-          moradores={moradores}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-          onPageChange={handlePageChange}
-          onSort={handleSort}
-          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
-        />
+        <>
+          <TableFilters 
+              onClear={() => setFilters({ ...initialFilters, empresaId: user.empresaId })}
+          >
+            <div className={stylesTableFilters.tableFilters}>
+              <Input 
+                  placeholder="Filtrar por morador"
+                  name="nome"
+                  value={filters.nome}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+            </div>
+          </TableFilters>
+
+          <MoradoresTable
+            moradores={moradores}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+            onPageChange={handlePageChange}
+            onSort={handleSort}
+            currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+          />
+        </>
       )}
 
       <ConfirmModal

@@ -3,9 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
+import TableFilters from '../../components/common/TableFilters';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { notificationService } from '../../services/notificationService';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
+import stylesTableFilters from '../../components/common/TableFilters.module.css';
 
 import imovelService from '../../services/imovelService';
 import ImovelForm from './ImovelForm';
@@ -22,16 +25,36 @@ function Imoveis() {
   const [editingImovel, setEditingImovel] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Imóveis';
+  const initialFilters = {
+    page: 1,
+    pageSize: 10,
+    sortBy: 'Id',
+    direction: 'ASC',
+    bloco: '',
+    apartamento: ''
+  };
+
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
-    sortBy: 'UserName',
+    sortBy: 'Id',
     direction: 'ASC',
-    empresaId: user.empresaId
+    empresaId: user.empresaId,
+    bloco: '',
+    apartamento: ''
   });
 
   const handlePageChange = (newPage) => {
     setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+        ...prev,
+        [name]: value,
+        page: 1 // Resetar para a primeira página ao aplicar um filtro
+    }));
   };
 
   const handleSort = (column) => {
@@ -44,34 +67,26 @@ function Imoveis() {
   };
 
   const fetchImoveis = useCallback(async () => {
-    if (!user || !user.token) {
-      notificationService.error('Acesso não autorizado. Por favor, faça login.');
-      setLoading(false);
-      return;
-    }
+    if (!user || !user.token) return;
 
     try {
-      setLoading(true);
-      const data = await imovelService.getAllPaged(
-        user.token,
-        filters.page,
-        filters.pageSize,
-        filters.sortBy,
-        filters.direction,
-        filters.empresaId
-      );
-      setImoveis(data);
-      setError(null);
+        setLoading(true);
+        const data = await imovelService.getAllPaged(user.token, filters);
+        setImoveis(data);
+        setError(null);
     } catch (err) {
       setError(err.message);
-      notificationService.error(`${err.message}`);
+      notificationService.error(err.message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   }, [user, filters]);
 
   useEffect(() => {
-    fetchImoveis();
+    const delayDebounceFn = setTimeout(() => {
+      fetchImoveis();
+    }, 500); // Adiciona um pequeno atraso para evitar chamadas excessivas ao digitar
+    return () => clearTimeout(delayDebounceFn);
   }, [fetchImoveis]);
 
   const confirmDelete = (imovelId) => {
@@ -182,14 +197,42 @@ function Imoveis() {
           imovelData={editingImovel}
         />
       ) : (
-        <ImoveisTable
-          imoveis={imoveis}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-          onPageChange={handlePageChange}
-        onSort={handleSort}
-        currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
-        />
+        <>
+          <TableFilters 
+              onClear={() => setFilters({ ...initialFilters, empresaId: user.empresaId })}
+          >
+            <div className={stylesTableFilters.tableFilters}>
+              <Input 
+                  placeholder="Filtrar por Bloco"
+                  name="bloco"
+                  value={filters.bloco}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+
+              <Input 
+                  placeholder="Filtrar por Apartamento"
+                  name="apartamento"
+                  value={filters.apartamento}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+            </div>
+          </TableFilters>
+
+          <ImoveisTable
+            imoveis={imoveis}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+            onPageChange={handlePageChange}
+            onSort={handleSort}
+            currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+          />
+        </>
       )}
 
       <ConfirmModal

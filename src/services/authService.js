@@ -42,23 +42,17 @@ export const authService = {
     return result.sucesso ? result.dados : result;
   },
 
-  getAllPaged: async (token, page = 1, pageSize = 10, sortBy = 'Id', sortDescending = 'ASC', empresaId = null) => {
-    if (!token) throw new Error("Token de autenticação não fornecido.");
+  getAllPaged: async (token, filters) => {
+    if (!token) throw new Error("Token não fornecido.");
 
-    const queryParams = new URLSearchParams({
-      page,
-      pageSize,
-      sortBy,
-      sortDescending,
-      ...(empresaId && { empresaId })
-    });
-
-    const response = await fetch(`${API_URL}/paginado?${queryParams}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+    const queryParams = new URLSearchParams(filters);
+    
+    const response = await fetch(`${API_URL}/paginado?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
     });
 
     const result = await response.json();

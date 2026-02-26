@@ -3,9 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
+import TableFilters from '../../components/common/TableFilters';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { notificationService } from '../../services/notificationService';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
+import stylesTableFilters from '../../components/common/TableFilters.module.css';
 
 import { authService } from '../../services/authService';
 import AuthForm from './AuthForm';
@@ -24,16 +27,34 @@ function Auths() {
   const [editingAuth, setEditingAuth] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Usuários';
+  const initialFilters = {
+    page: 1,
+    pageSize: 10,
+    sortBy: 'Id',
+    direction: 'ASC',
+    userName: ''
+  };
+
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
     sortBy: 'UserName',
     direction: 'ASC',
-    empresaId: user.empresaId
+    empresaId: user.empresaId,
+    userName: ''
   });
 
   const handlePageChange = (newPage) => {
     setFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+        ...prev,
+        [name]: value,
+        page: 1 // Resetar para a primeira página ao aplicar um filtro
+    }));
   };
 
   const handleSort = (column) => {
@@ -50,26 +71,22 @@ function Auths() {
 
     try {
       setLoading(true);
-      const data = await authService.getAllPaged(
-        user.token,
-        filters.page,
-        filters.pageSize,
-        filters.sortBy,
-        filters.direction,
-        filters.empresaId
-      );
+      const data = await authService.getAllPaged(user.token, filters);
       setAuths(data);
       setError(null);
     } catch (err) {
       setError(err.message);
-      notificationService.error(`${err.message}`);
+      notificationService.error(err.message);
     } finally {
       setLoading(false);
     }
   }, [user, filters]);
 
   useEffect(() => {
-    fetchAuths();
+    const delayDebounceFn = setTimeout(() => {
+      fetchAuths();
+    }, 500); // Adiciona um pequeno atraso para evitar chamadas excessivas ao digitar
+    return () => clearTimeout(delayDebounceFn);
   }, [fetchAuths]);
 
   const confirmDelete = (authId) => {
@@ -184,14 +201,32 @@ function Auths() {
           authData={editingAuth}
         />
       ) : (
-        <AuthsTable
-          auths={auths}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-          onPageChange={handlePageChange}
-          onSort={handleSort}
-          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
-        />
+        <>
+          <TableFilters 
+              onClear={() => setFilters({ ...initialFilters, empresaId: user.empresaId })}
+          >
+            <div className={stylesTableFilters.tableFilters}>
+              <Input 
+                  placeholder="Filtrar por usuário"
+                  name="userName"
+                  value={filters.userName}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+            </div>
+          </TableFilters>
+
+          <AuthsTable
+            auths={auths}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+            onPageChange={handlePageChange}
+            onSort={handleSort}
+            currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+          />
+        </>
       )}
 
       <ConfirmModal

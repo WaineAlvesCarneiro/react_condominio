@@ -63,7 +63,7 @@ function MoradoresTable({ moradores, onEdit, onDelete, onPageChange, onSort, cur
               <td className={`${styles.status} ${morador.isProprietario ? styles.sim : styles.nao}`}>
                 {morador.isProprietario ? 'Sim' : 'Não'}
               </td>
-              <td className={stylesDataTable.action}>
+              <td className={stylesDataTable.actionContainer}>
                 <Button variant="primary" size="small" onClick={() => onEdit(morador)} customClass={stylesDataTable.actionButton}>
                   {user.role === 'Sindico' ? 'Editar' : 'Visualizar'}
                 </Button>

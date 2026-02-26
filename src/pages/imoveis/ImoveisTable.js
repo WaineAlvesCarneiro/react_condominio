@@ -52,7 +52,7 @@ function ImoveisTable({ imoveis, onEdit, onDelete, onPageChange, onSort, current
               <td>{imovel.bloco}</td>
               <td>{imovel.apartamento}</td>
               <td>{imovel.boxGaragem}</td>
-              <td className={stylesDataTable.action}>
+              <td className={stylesDataTable.actionContainer}>
                 <Button variant="primary" size="small" onClick={() => onEdit(imovel)} customClass={stylesDataTable.actionButton}>
                   {user.role === 'Sindico' ? 'Editar' : 'Visualizar'}
                 </Button>

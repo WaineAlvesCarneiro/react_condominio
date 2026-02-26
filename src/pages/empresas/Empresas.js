@@ -3,9 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/common/Button';
+import Input from '../../components/common/Input';
+import TableFilters from '../../components/common/TableFilters';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { notificationService } from '../../services/notificationService';
 import stylesPageLayout from '../../components/layout/PageLayout.module.css';
+import stylesTableFilters from '../../components/common/TableFilters.module.css';
 
 import empresaService from '../../services/empresaService';
 import EmpresasTable from './EmpresasTable';
@@ -23,16 +26,36 @@ function Empresas() {
   const [editingEmpresa, setEditingEmpresa] = useState(null);
   const [itemToDelete, setItemToDelete] = useState(null);
   const titulo = 'Gerenciamento de Empresas';
+  const initialFilters = {
+    page: 1,
+    pageSize: 10,
+    sortBy: 'Id',
+    direction: 'ASC',
+    razaoSocial: '',
+    cnpj: ''
+  };
+
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 10,
-    sortBy: 'UserName',
+    sortBy: 'Id',
     direction: 'ASC',
-    empresaId: user.empresaId
+    empresaId: user.empresaId,
+    razaoSocial: '',
+    cnpj: ''
   });
 
   const handlePageChange = (newPage) => {
     setFilters(prev => ({ ...prev, page: newPage }));
+  };
+  
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({
+        ...prev,
+        [name]: value,
+        page: 1 // Resetar para a primeira página ao aplicar um filtro
+    }));
   };
 
   const handleSort = (column) => {
@@ -45,34 +68,26 @@ function Empresas() {
   };
 
   const fetchEmpresas = useCallback(async () => {
-    if (!user || !user.token) {
-      notificationService.error('Acesso não autorizado. Por favor, faça login.');
-      setLoading(false);
-      return;
-    }
+    if (!user || !user.token) return;
 
     try {
       setLoading(true);
-      const data = await empresaService.getAllPaged(
-        user.token,
-        filters.page,
-        filters.pageSize,
-        filters.sortBy,
-        filters.direction,
-        filters.empresaId
-      );
+      const data = await empresaService.getAllPaged(user.token, filters);
       setEmpresas(data);
       setError(null);
     } catch (err) {
       setError(err.message);
-      notificationService.error(`${err.message}`);
+      notificationService.error(err.message);
     } finally {
       setLoading(false);
     }
   }, [user, filters]);
 
   useEffect(() => {
-    fetchEmpresas();
+    const delayDebounceFn = setTimeout(() => {
+      fetchEmpresas();
+    }, 500); // Adiciona um pequeno atraso para evitar chamadas excessivas ao digitar
+    return () => clearTimeout(delayDebounceFn);
   }, [fetchEmpresas]);
 
   const confirmDelete = (empresaId) => {
@@ -187,14 +202,42 @@ function Empresas() {
           empresaData={editingEmpresa}
         />
       ) : (
-        <EmpresasTable
-          empresas={empresas}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-          onPageChange={handlePageChange}
-          onSort={handleSort}
-          currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
-        />
+        <>
+          <TableFilters 
+              onClear={() => setFilters({ ...initialFilters, empresaId: user.empresaId })}
+          >
+            <div className={stylesTableFilters.tableFilters}>
+              <Input 
+                  placeholder="Filtrar por razão social"
+                  name="razaoSocial"
+                  value={filters.razaoSocial}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+
+              <Input 
+                  placeholder="Filtrar por CNPJ"
+                  name="cnpj"
+                  value={filters.cnpj}
+                  onChange={handleFilterChange}
+                  minLength={1}
+                  maxLength={100}
+                  autoComplete="off"
+              />
+            </div>
+          </TableFilters>
+
+          <EmpresasTable
+            empresas={empresas}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+            onPageChange={handlePageChange}
+            onSort={handleSort}
+            currentSort={{ sortBy: filters.sortBy, direction: filters.direction }}
+          />
+        </>
       )}
 
       <ConfirmModal

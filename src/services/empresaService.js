@@ -27,24 +27,17 @@ const empresaService = {
     throw new Error(result.erro || 'Erro desconhecido na API.');
   },
 
-  getAllPaged: async (token, page = 1, pageSize = 10, sortBy = 'Id', sortDescending = 'ASC') => {
-    if (!token) throw new Error("Token de autenticação não fornecido.");
+  getAllPaged: async (token, filters) => {
+    if (!token) throw new Error("Token não fornecido.");
 
-    const params = {
-      page: page.toString(),
-      pageSize: pageSize.toString(),
-      sortBy: sortBy,
-      sortDescending: sortDescending,
-    };
-    const queryParams = new URLSearchParams(params);
-    const url = `${API_URL}/paginado?${queryParams.toString()}`; 
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+    const queryParams = new URLSearchParams(filters);
+    
+    const response = await fetch(`${API_URL}/paginado?${queryParams.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
     });
 
     const result = await response.json();
