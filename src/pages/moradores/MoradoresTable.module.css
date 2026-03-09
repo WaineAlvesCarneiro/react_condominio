@@ -1,0 +1,11 @@
+/* src\pages\moradores\MoradoresTable.module.css */
+
+.status.sim {
+  color: green;
+  font-weight: bold;
+}
+
+.status.nao {
+  color: red;
+  font-weight: bold;
+}
