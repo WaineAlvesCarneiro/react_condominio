@@ -27,6 +27,7 @@ O usuário com perfil Síndico poderá cadastrar os imóveis e também inativar 
 
 Após cadastrar o imovel o usuário com perfil síndico pode cadastrar moradores e vincular ao seu imovel.
 
+Link do Vídeo no Youtube: https://youtu.be/cFyPi0KkJH0
 
 Autenticação e Autorização:
 
