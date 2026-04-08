@@ -239,6 +239,7 @@ function EmpresaForm({ onSave, onCancel, empresaData }) {
                     <Input
                         id="senha"
                         name="senha"
+                        type="password"
                         value={empresa.senha}
                         onChange={handleChange}
                         minLength={3}
